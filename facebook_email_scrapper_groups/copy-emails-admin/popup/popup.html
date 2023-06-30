@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Button Clicker</title>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" type="text/css" href="../theme/styles.css" />
+</head>
+
+<body>
+  <!-- NAVIGATION -->
+  <ul class="tab-navigation">
+    <li class="tab-link active" target-name="settings">Settings</li>
+    <li class="tab-link" target-name="resources">Resources</li>
+
+    <li class="link" id="extensionVersion" style="
+          float: right;
+          text-transform: none;
+          padding-right: 0;
+          cursor: default;
+        "></li>
+  </ul>
+  <!-- NAVIGATION -->
+
+  <!-- TAB CONTENTS -->
+
+  <div class="tab-content active" data-name="loadingAnimation" style="height: 325px">
+    <div class="sub-content active" data-name="" style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgb(255, 255, 255);
+          ">
+      <div style="text-align: center; margin: calc(50vh - 37.5px) 0 0 0">
+        <svg width="75px" height="75px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" fill="none" stroke="rgb(87, 114, 227)" stroke-width="5" r="40"
+            stroke-dasharray="164.93361431346415 56.97787143782138" transform="rotate(218.482 50 50)"
+            stroke-linecap="round">
+            <animateTransform attributeName="transform" type="rotate" calcMode="linear" values="0 50 50;360 50 50"
+              keyTimes="0;1" dur="1s" begin="0s" repeatCount="indefinite"></animateTransform>
+          </circle>
+        </svg>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <div id="licensingNode">
+    <div
+      style="position: fixed; z-index: 10; width: 100%; height: 100%; background: rgb(255 255 255); top: 0; left: 0;">
+      <div name="licensing" style="margin:  40px 40px; text-align: justify;">
+        <span class="input-label-top"
+        >Select Group</span
+      ><br />
+        <select name="groups">
+          <option value='All'>All</option>
+        </select>
+        <button id="download">Download</button>
+        <br />
+        <br />
+      </div>
+    </div>
+  </div>
+  <!-- TAB CONTENTS -->
+
+  <!-- JAVASCRIPTS -->
+  <script type="text/javascript" src="popup.js"></script>
+  <!-- JAVASCRIPTS -->
+</body>
+
+</html>

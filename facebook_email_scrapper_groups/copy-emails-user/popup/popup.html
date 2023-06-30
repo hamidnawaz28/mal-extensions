@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title></title>
+	<meta charset="UTF-8" />
+	<style>
+		#emails{
+			border-radius: -6px;
+			height: auto;
+			padding: 10px;
+			
+		} 
+		button {
+			color: white;
+			border: none;
+			padding: 3px 21px;
+			border-radius: 3px;
+		}
+		button:hover {
+			cursor: pointer;
+		}
+		#testing {
+			background-color: #027802;
+		}
+		#clear {
+			background-color: #c95d5d;
+		}
+		#copy {
+			color:black;
+			background-color: white;
+			border: 1px solid grey !important
+		}
+	</style>
+</head>
+
+<body style="width: 400px;">
+	<span id="title" style="font-size: large; font-weight: bold; display:flex; justify-content: center; padding-top: 10px;flex-direction: column;grid-gap: 10px;align-items: center;">
+		<img src="../icons/128.png" alt="">
+		<div>EMAIL COPIER</div>
+	</span>
+	<br></br>
+	<span id="totalEmails"></span>
+	<br></br>
+	<div id="lists">
+		<div style="display: flex;flex-direction: column;">
+			<select id="emails" class="list" size="6" style="height: auto;" name="selectedList">
+			</select>
+		</div>
+	<br></br>
+		<button id="testing"> Start</button>
+		<button id="clear"> Clear</button>
+		<button id="copy"> Copy</button>
+		<script type="text/javascript" src="popup.js"></script>
+</body>
+
+</html>

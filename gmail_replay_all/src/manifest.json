@@ -1,0 +1,27 @@
+{
+  "name": "gmail_reply_all",
+  "description": "gmail_reply_all",
+  "version": "1.0.0",
+  "manifest_version": 3,
+  "icons": {
+    "16": "logo.png",
+    "32": "logo.png",
+    "48": "logo.png",
+    "128": "logo.png"
+  },
+  "host_permissions": ["https://sag.gemquery.com/*"],
+  "permissions": ["tabs","activeTab","scripting","storage"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "run_at": "document_end",
+      "matches":  ["https://mail.google.com/*"],
+      "js": ["content-script.js"]
+    }
+  ]
+}
