@@ -1,0 +1,32 @@
+{
+  "name": "dancuquocgia",
+  "description": "dancuquocgia uploader",
+  "version": "1.0.0",
+  "manifest_version": 3,
+  "icons": {
+    "16": "logo.png",
+    "32": "logo.png",
+    "48": "logo.png",
+    "128": "logo.png"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "run_at": "document_end",
+      "matches": [
+        "https://*/*"
+      ],
+      "js": [
+        "content-script.js"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quote Generator</title>
+  <style>
+    body {
+      padding: 0px;
+      margin: 0px;
+    }
+
+    .dropzone {
+      border: 2px dashed #cccccc;
+      border-radius: 4px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .dropzone.active {
+      border-color: #00bfff;
+    }
+
+    .uploader {
+      width: 200px
+    }
+
+    .container {
+      width: 300px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px 0px;
+      grid-gap: 20px;
+    }
+
+    .heading {
+      width: 100%;
+      text-align: center;
+      padding: 5px;
+      color: white;
+      background-color: #3eabab;
+      border-radius: 13px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script src="popup.js"></script>
+</body>
+
+</html>

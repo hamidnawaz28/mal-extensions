@@ -1,0 +1,26 @@
+{
+  "name": "Contentcue",
+  "description": "Get an insight of the youtube videos, with just on click",
+  "version": "1.0.0",
+  "manifest_version": 3,
+  "icons": {
+    "16": "logo.png",
+    "32": "logo.png",
+    "48": "logo.png",
+    "128": "logo.png"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "run_at": "document_end",
+      "matches": [
+        "https://*.shein.com/*"
+      ],
+      "js": [
+        "content-script.js"
+      ]
+    }
+  ]
+}
