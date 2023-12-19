@@ -33,18 +33,13 @@ const renderBidButton = async () => {
           fillRefField("#fullName", fullName)
           await asyncSleep(0.6)
 
-          // const gender = item["Giới tính"]
-          // const genderRef = document.querySelector("#gender") as HTMLElement
-          // enterText(genderRef, gender)
-          // await asyncSleep(1)
-          // const genderMatchRef = document.querySelector("#gender_list")?.parentElement?.querySelector(".rc-virtual-list .rc-virtual-list-holder-inner>div:nth-child(1)") as HTMLElement
-          // genderMatchRef?.click()
-          // await asyncSleep(0.6)
           const gender = item["Giới tính"].trim()
+          const genderRef = document.querySelector("#gender") as HTMLElement
+          enterText(genderRef, gender)
+          await asyncSleep(1)
           const genderMatchRef = document.querySelector(`#gender_list`)?.parentElement?.querySelector(`div[title='${gender}']`) as HTMLElement
           genderMatchRef?.click()
           await asyncSleep(1)
-
 
           const birthDate = item["Ngày sinh"]
           fillRefField("#birthDate", birthDate)
@@ -53,7 +48,7 @@ const renderBidButton = async () => {
           selectedDateRef?.click()
           await asyncSleep(0.6)
 
-          const identifyType = item["\nLoại giấy tờ"]
+          const identifyType = item["Loại giấy tờ"]
           const identifyTypeRef = document.querySelector("#identifyType") as HTMLElement
           enterText(identifyTypeRef, identifyType)
           await asyncSleep(1)
@@ -81,25 +76,18 @@ const renderBidButton = async () => {
           const countryRef = document.querySelector("#countryId_list")?.parentElement?.querySelector(countrySelector) as HTMLElement
           countryRef?.click()
           await asyncSleep(2)
-          // const countryIdRef = document.querySelector("#countryId") as HTMLElement
-          // enterText(countryIdRef, countryId)
-          // await asyncSleep(1)
-          // const countryIdMatchRef = document.querySelector("#countryId_list")?.parentElement?.querySelector(".rc-virtual-list .rc-virtual-list-holder-inner>div:nth-child(1)") as HTMLElement
-          // countryIdMatchRef?.click()
-          // await asyncSleep(0.6)
 
-          const registrationAddress = item["\nĐịa chỉ"]
+          const registrationAddress = item["Địa chỉ"]
           fillRefField("#registrationAddress", registrationAddress)
           await asyncSleep(0.6)
-
-          // const checkIn = item["Lưu trú từ ngày"]
-          // fillRefField("#checkIn", checkIn)
-          // await asyncSleep(0.6)
 
           const checkOut = item["Lưu trú đến ngày"]
           fillRefField("#checkOut", checkOut)
           await asyncSleep(1)
           selectedDateRef = document.querySelector(".react-datepicker__day--keyboard-selected") as HTMLElement
+          selectedDateRef?.click()
+
+          selectedDateRef = document.querySelector(".react-datepicker__day--selected") as HTMLElement
           selectedDateRef?.click()
           await asyncSleep(0.5)
 
@@ -111,17 +99,15 @@ const renderBidButton = async () => {
           roomIdMatchRef?.click()
           await asyncSleep(0.6)
 
-          // const reasonStayIdRef = document.querySelector("#reasonStayId") as HTMLElement
-          // enterText(reasonStayIdRef, reasonStayId)
-          // await asyncSleep(1)
-          // const reasonStayIdMatchRef = document.querySelector("#reasonStayId_list")?.parentElement?.querySelector(".rc-virtual-list .rc-virtual-list-holder-inner>div:nth-child(1)") as HTMLElement
-          // reasonStayIdMatchRef?.click()
-          // await asyncSleep(0.6)
           const reasonStayId = "Du lịch"
+          const reasonStayIdRef = document.querySelector("#reasonStayId") as HTMLElement
+          enterText(reasonStayIdRef, reasonStayId)
+          await asyncSleep(1)
           const reasonStayIdMatchRef = document.querySelector("#reasonStayId_list")?.parentElement?.querySelector(`div[title='${reasonStayId}']`) as HTMLElement
-          reasonStayIdMatchRef.click()
+          reasonStayIdMatchRef?.click()
 
           fillRefField("#note", reasonStayId)
+          await asyncSleep(2)
           const buttonsRef = Array.from(document.querySelectorAll(".ant-row.ant-row-end.mt-2 button")) as HTMLElement[]
           buttonsRef?.[0]?.click()
           await asyncSleep(5)
@@ -137,4 +123,3 @@ const renderBidButton = async () => {
 }
 
 renderBidButton()
-// 12/13/2023 12:00:00 AM
