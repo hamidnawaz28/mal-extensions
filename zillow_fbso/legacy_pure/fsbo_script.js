@@ -57,6 +57,7 @@
                         chrome.runtime.sendMessage({ type: "save_listing", data: ob }, function (res) {
                             chrome.storage.sync.set({ csv_url: res.csv_file }, function () { });
                         });
+
                     })
                 }
 

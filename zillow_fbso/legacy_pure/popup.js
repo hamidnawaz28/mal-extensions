@@ -137,6 +137,7 @@ function load_agent_list() {
                             $("#list_details_" + id).show();
                         });
                     })
+
                 })
                 $(".list_clickable").each(function () {
                     $(this).click(function (e) {

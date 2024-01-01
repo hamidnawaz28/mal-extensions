@@ -2,7 +2,7 @@ import Browser from 'webextension-polyfill'
 
 const syncRef = Browser.storage.sync
 
-const STORE_NAME = 'app_info'
+const STORE_NAME = 'zillow_fbso'
 
 async function setSyncStorage(data: UserDataInterface) {
   await syncRef.set({ [STORE_NAME]: data })

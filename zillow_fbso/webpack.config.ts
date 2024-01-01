@@ -7,7 +7,10 @@ const config = {
   entry: {
     background: '/src/background/index.ts',
     popup: '/src/popup/index.tsx',
-    'facebook': '/src/content-scripts/facebook.ts',
+    'fb_marketplace_upload': '/src/content-scripts/facebook/fb_marketplace_prop_sale.ts',
+    'fb_page_upload': '/src/content-scripts/facebook/fb_page.ts',
+    'zillow_property_data': '/src/content-scripts/zillow/property_data.ts',
+    'zillow_buttons_ui': '/src/content-scripts/zillow/buttons_ui.tsx',
   },
 
   module: {

@@ -1,8 +1,8 @@
 import { asyncSleep, getBlogStorage, runTimeMessage, setBlobStorage } from "../common/browerMethods"
-import { MESSAGING, VehicleSiteTypes } from "../common/constants"
+import { MESSAGING } from "../common/constants"
 
 export const enterText = (ref: any, text: string) => {
-    ref.focus()
+    ref?.focus()
     document.execCommand('insertText', false, text)
 }
 
@@ -11,14 +11,19 @@ export const findElementWithText = (selector: string, text: string) =>
         (el: any) => el.innerText == text,
     ) as HTMLElement
 
+export const findElementWithTextIncludes = (ref: any, selector: string, text: string) =>
+    Array.from(ref.querySelectorAll(selector)).find(
+        (el: any) => el.innerText.includes(text)
+    ) as HTMLElement
+
 export const cleanString = (str: string) => str.replace(/\\|"|\\r/g, '')
 
 export const dropDownSelect = async (labelText: string, value: string) => {
     await asyncSleep(0.5)
     const elementRef = document.querySelector(`[aria-label='${labelText}']`) as HTMLElement
-    elementRef.click()
+    elementRef?.click()
     await asyncSleep(1)
-    findElementWithText('span', value).click()
+    findElementWithText('span', value)?.click()
 }
 
 export const fillTextField = async (selector: string, value: string) => {
@@ -30,7 +35,7 @@ export const fillTextField = async (selector: string, value: string) => {
 export const fillDynamicSelect = async (selector: string, value: string) => {
     await fillTextField(selector, value)
     await asyncSleep(4)
-    const firstAddress = document.querySelector('ul[aria-label*="suggested searches"] li') as HTMLElement
+    const firstAddress = document.querySelector('ul[aria-label*="suggested searches"] li div div') as HTMLElement
     firstAddress?.click()
 }
 
@@ -40,7 +45,7 @@ export const iconButtonClick = async (selector: string) => {
     await asyncSleep(2)
 }
 
-export async function uploadImage(imageUrl: string, site: VehicleSiteTypes) {
+export async function uploadImage(imageUrl: string) {
 
     let imageBlob: any = null
 
@@ -66,4 +71,17 @@ export async function uploadImage(imageUrl: string, site: VehicleSiteTypes) {
     const dropEvent = new DragEvent('drop', { bubbles: true, dataTransfer: new DataTransfer() })
     dropEvent?.dataTransfer?.items.add(image)
     addPhotoBtn?.dispatchEvent(dropEvent)
+}
+
+export const waitTillElementExists = (selector: string) => {
+    return new Promise((resolve) => {
+        const interval = setInterval(() => {
+            const ref = document.querySelector(selector) as HTMLElement
+            if (ref) {
+                clearInterval(interval)
+                resolve(true)
+            }
+        }, 1000)
+    }
+    )
 }

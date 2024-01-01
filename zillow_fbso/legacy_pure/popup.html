@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="bootstrap.min.css" />
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-xs-6 btn-group">
+        <div class="row">
+          <div class="col-xs-12">
+            <h5>SHOW SCRAPED DATA</h5>
+            <select class="form-group text-center" id="ddl_list">
+              <option value="FSBO_LISTING" class="form-control">
+                FSBO LISTING
+              </option>
+              <option value="ZILLOW_REVIEWS" class="form-control">
+                ZILLOW REVIEWS
+              </option>
+              <option value="AGENT_LISTING" class="form-control">
+                AGENT LISTING
+              </option>
+            </select>
+          </div>
+          <div class="col-xs-12">
+            <h5 id="list_description"></h5>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-6">
+        <div class="row">
+          <div class="col-xs-2 col-xs-offset-6 text-right">
+            <button id="help" class="btn btn-warning">Help</button>
+          </div>
+          <div class="col-xs-4 text-right">
+            <img height="110" width="100" src="FSBO.png" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 text-right api">
+            <span class="api_key1">API Key </span>
+            <input class="api_key2" id="api_key" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <b>
+        <p id="error_info" class="bg-danger text-center"></p>
+      </b>
+    </div>
+    <div class="row">
+      <div class="col-xs-12 text-center"></div>
+    </div>
+    <div class="row">
+      <div class="col-xs-3">
+        <button id="btn-del-all" class="btn btn-info text-center mr-5">
+          DELETE ALL LISTING
+        </button>
+      </div>
+      <div class="col-xs-3">
+        <button id="btn-ref" class="btn btn-info text-center">
+          REFRESH TABLE
+        </button>
+      </div>
+      <div class="col-xs-3">
+        <button id="btn-download" class="btn btn-info text-center">
+          DOWNLOAD FILE
+        </button>
+      </div>
+      <div class="col-xs-3">
+        <input id="inpt-search" placeholder="SEARCH FOR A LISTING" class="form-control text-center" />
+      </div>
+    </div>
+    <div id="list_container" class="row"></div>
+  </div>
+  <script src="jquery.js"></script>
+  <script src="popup.js"></script>
+</body>
+
+</html>

@@ -1,5 +1,5 @@
 import Browser from 'webextension-polyfill'
-import { VehicleSiteTypes, MESSAGING } from './constants'
+import { MESSAGING } from './constants'
 const STORE_NAME = 'social_auto_group'
 
 const syncRef = Browser.storage.sync
@@ -92,18 +92,21 @@ function asyncSleep(sec: any) {
 }
 
 
-const addPostedVehicle = async (site: VehicleSiteTypes, vehicleId: string | undefined) => {
-  const allLocalData = await getLocalStorage()
-  const id = `${site}PostedVehicles`
-  const newPostedList = [vehicleId, ...allLocalData[id]]
-  const newData = {
-    ...allLocalData,
-    [id]: newPostedList
+
+
+const updateData = async (data: any) => {
+  const localData = await getLocalStorage()
+
+  const updatedData = {
+    ...localData,
+    ...data,
   }
-  await setLocalStorage(newData)
+  await setLocalStorage(updatedData)
 }
 
+
 export {
+  updateData,
   setSyncStorage,
   getSyncStorage,
   setLocalStorage,
@@ -117,6 +120,5 @@ export {
   waitForActiveTabLoads,
   asyncSleep,
   activeTabData,
-  addPostedVehicle,
   waitForActiveTabLoadsRunTime
 }

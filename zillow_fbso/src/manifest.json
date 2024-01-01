@@ -1,90 +1,65 @@
 {
-  "name": "Vehicle scraper and Lister",
-  "description": "Scrap and list vehicle on facebook marketplace!",
-  "version": "1.0.4",
+  "name": "FSBO ALL Scraper",
+  "author": "SAM",
   "manifest_version": 3,
-  "host_permissions": [
-    "https://sag.gemquery.com/*",
-    "https://www.mckinnontoyota.com/*",
-    "*://*.facebook.com/*",
-    "https://www.autotrader.com/*",
-    "https://images.autotrader.com/*",
-    "https://www.carsforsale.com/*",
-    "https://www.cars.com/*",
-    "https://www.carzing.com/*",
-    "https://cdn05.carsforsale.com/*",
-    "https://imagescf.dealercenter.net/*",
-    "https://platform.cstatic-images.com/*",
-    "https://assets.cai-media-management.com/*"
-  ],
-  "permissions": [
-    "storage",
-    "activeTab",
-    "tabs",
-    "scripting"
-  ],
+  "description": "FSBO ALL Scraper Description",
+  "version": "1.0.0",
   "background": {
     "service_worker": "background.js"
   },
   "action": {
+    "default_icon": "16.png",
     "default_popup": "popup.html",
-    "default_icon": {
-      "16": "logo.png",
-      "32": "logo.png",
-      "48": "logo.png",
-      "128": "logo.png"
-    }
+    "default_title": "FSBO Scraper"
   },
   "icons": {
-    "16": "logo.png",
-    "32": "logo.png",
-    "48": "logo.png",
-    "128": "logo.png"
+    "16": "16.png",
+    "48": "48.png",
+    "128": "128.png"
   },
+  "content_security_policy": {
+    "extension_page": "script-src 'self' https://sag.gemquery.com; object-src 'self'"
+  },
+  "permissions": [
+    "storage",
+    "tabs",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://sag.gemquery.com/webhook/real-estate-listing",
+    "https://sag.gemquery.com/csv-files/listings-david-west-sells-houses.csv",
+    "https://www.zillow.com/*",
+    "https://www.facebook.com/marketplace/create/rental",
+    "https://photos.zillowstatic.com/*"
+  ],
   "content_scripts": [
+    {
+      "run_at": "document_end",
+      "matches": [
+        "https://www.zillow.com/homedetails/*"
+      ],
+      "js": [
+        "zillow_buttons_ui.js",
+        "zillow_property_data.js"
+      ]
+    },
+    {
+      "run_at": "document_end",
+      "matches": [
+        "https://www.zillow.com/profile/*"
+      ],
+      "js": [
+        "zillow_buttons_ui.js"
+      ]
+    },
     {
       "run_at": "document_end",
       "matches": [
         "https://www.facebook.com/*"
       ],
       "js": [
-        "facebook.js"
-      ]
-    },
-    {
-      "run_at": "document_end",
-      "matches": [
-        "https://www.autotrader.com/car-dealers/*"
-      ],
-      "js": [
-        "auto-trader.js"
-      ]
-    },
-    {
-      "run_at": "document_end",
-      "matches": [
-        "https://www.carsforsale.com/used-car-dealer/*"
-      ],
-      "js": [
-        "car-for-sale.js"
-      ]
-    },
-    {
-      "run_at": "document_end",
-      "matches": [
-        "https://www.carzing.com/dealer/*"
-      ],
-      "js": [
-        "car-zing.js"
-      ]
-    },
-    {
-      "run_at": "document_end",
-      "matches": [
-        "https://www.cars.com/dealers/*"
-      ],
-      "js": [
-        "cars.js"
+        "fb_marketplace_upload.js",
+        "fb_page_upload.js"
       ]
     }
   ]
