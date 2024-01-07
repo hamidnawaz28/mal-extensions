@@ -59,7 +59,7 @@ const config = {
   },
   output: {
     path: path.resolve(__dirname, 'build'),
-    filename: 'zillow_fbso/[name].js',
+    filename: 'zlister/[name].js',
   },
   plugins: [
     new MiniCssExtractPlugin({
@@ -67,14 +67,16 @@ const config = {
     }),
     new CopyWebpackPlugin({
       patterns: [
-        { from: 'src/manifest.json', to: 'zillow_fbso' },
-        { from: 'src/popup/popup.html', to: 'zillow_fbso' },
-        { from: 'legacy', to: 'zillow_fbso' },
+        { from: 'src/manifest.json', to: 'zlister' },
+        { from: 'src/popup/popup.html', to: 'zlister' },
+        { from: 'src/assets', to: 'zlister' },
+
+        // { from: 'legacy', to: 'zlister' },
       ],
     }),
     new ZipPlugin({
-      path: '/zillow_fbso',
-      filename: 'zillow_fbso.zip',
+      path: '/zlister',
+      filename: 'zlister.zip',
       extension: 'zip',
       fileOptions: {
         mtime: new Date(),

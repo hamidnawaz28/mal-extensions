@@ -317,7 +317,7 @@ const Header = () => {
         padding: '5px 10px',
         marginBottom: "10px"
     }}>
-        <img src="FSBO.png" alt="" height={"100%"} />
+        <img src="logo.png" alt="" height={"100%"} />
         <IconButton aria-label="delete" onClick={() =>
             Browser.tabs.create({ url: "http://www.realestatescrape.com/" })}>
             <HelpCenter />

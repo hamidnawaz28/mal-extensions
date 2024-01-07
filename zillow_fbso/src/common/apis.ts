@@ -6,6 +6,10 @@ export const apiFactory = {
     return await apiCall("get_info", {}, 'real-estate-listing')
   },
   saveListing: async (data: any) => {
+    data.baths = parseInt(data?.baths) ?? 0
+    data.bedrooms = parseInt(data?.bedrooms) ?? 0
+    data.price = parseInt(data.price) ?? 0
+    data.sq_ft = parseInt(data.sq_ft) ?? 0
     return await apiCall("real_estate_listing", data, 'real-estate-listing')
   },
   deleteListing: async (real_estate_listing_id: string) => {
@@ -28,8 +32,10 @@ export const apiFactory = {
   },
 }
 
-const apiCall = async (type: string, data: Record<string, unknown>, dataType: 'real-estate-review' | 'real-estate-listing') => {
+const apiCall = async (type: string, data: any, dataType: 'real-estate-review' | 'real-estate-listing') => {
   const localStorage = await getLocalStorage()
+
+
   const dataSerielized = JSON.stringify({
     "api_key": localStorage.apiKey,
     ...data,
@@ -38,7 +44,7 @@ const apiCall = async (type: string, data: Record<string, unknown>, dataType: 'r
 
   const config = {
     method: 'post',
-    url: `https://sag.gemquery.com/webhook/${dataType}?Content-Type=application/json`,
+    url: `https://sag.gemquery.com/webhook/${dataType}`,
     headers: {
       'Content-Type': 'application/json'
     },
@@ -46,9 +52,11 @@ const apiCall = async (type: string, data: Record<string, unknown>, dataType: 'r
   };
   try {
     const response = await axios.request(config)
-    if (response.data.success) {
+    if (response?.data?.success) {
       return response.data
-    } else return {}
+    } else {
+      return {}
+    }
   } catch (err: any) {
     return {}
   }

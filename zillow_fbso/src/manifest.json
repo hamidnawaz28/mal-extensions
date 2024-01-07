@@ -1,21 +1,21 @@
 {
-  "name": "FSBO ALL Scraper",
-  "author": "SAM",
+  "name": "Z lister",
+  "author": "SAG",
   "manifest_version": 3,
-  "description": "FSBO ALL Scraper Description",
+  "description": "Z lister is a powerful A.I. tool for real estate agents!",
   "version": "1.0.0",
   "background": {
     "service_worker": "background.js"
   },
   "action": {
-    "default_icon": "16.png",
+    "default_icon": "logo.png",
     "default_popup": "popup.html",
-    "default_title": "FSBO Scraper"
+    "default_title": "zlister"
   },
   "icons": {
-    "16": "16.png",
-    "48": "48.png",
-    "128": "128.png"
+    "16": "logo.png",
+    "48": "logo.png",
+    "128": "logo.png"
   },
   "content_security_policy": {
     "extension_page": "script-src 'self' https://sag.gemquery.com; object-src 'self'"
@@ -36,7 +36,7 @@
     {
       "run_at": "document_end",
       "matches": [
-        "https://www.zillow.com/homedetails/*"
+        "https://www.zillow.com/*"
       ],
       "js": [
         "zillow_buttons_ui.js",

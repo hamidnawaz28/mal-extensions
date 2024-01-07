@@ -83,7 +83,7 @@ const scrollTillBottom = (ref: any) => {
 }
 
 const downloadListings = async (data: any) => {
-  const name = "FBSO Listings"
+  const name = "FSBO Listings"
   const headers: any = ["id", "image", "bedrooms", "baths", "price", "sq_ft", "seller_phone_number", "address", "zillow_listing_url"]
   const mappedData: any = data.map((item: any) => [item.id, item.image, item.bedrooms, item.baths, item.price, item.sq_ft, item.seller_phone_number, item.address, item.zillow_listing_url])
   const dat = mappedData.map((el: any) => el.map((el2: any) => el2.toString()))

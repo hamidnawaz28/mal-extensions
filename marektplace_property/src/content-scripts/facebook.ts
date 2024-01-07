@@ -7,49 +7,66 @@ import { SHEET_HEADERS } from '../common/constants'
 
 const collectData = async (spreadsheetId: string) => {
     const url = window.location.href
-    const dataRef: any = document.querySelector("[aria-label='Message']")?.parentElement?.parentElement?.parentElement?.parentElement
+    const divesRef2: any = Array.from(document.querySelectorAll('a[href*="/propertyrentals/"]') ?? [])?.find((el: any) => el?.innerText == 'Property to rent')?.parentElement?.parentElement
+    const title = divesRef2?.querySelector('h1')?.innerText
+    const price = divesRef2?.innerText?.split("\n").find((el: any) => el?.toLowerCase()?.includes('/month') || el?.toLowerCase()?.includes('/ month'))
 
-    const dataDivRef: any = Array.from(dataRef.children)
+    const gridRef = Array.from(document.querySelectorAll('span') ?? [])?.find(el => el.innerText.includes('Report this listing'))?.parentElement?.parentElement
+    const newDivRef: any = Array.from(gridRef?.children ?? [])
 
-    const headlineRef: any = dataDivRef?.[0]
-    const title = headlineRef.querySelector("h1:nth-child(1) span")?.innerText
-    const price = headlineRef.querySelector("div:nth-child(2)>div>span")?.innerText
-    const detailsRef: any = dataDivRef?.[1]?.children?.[0]
-    const locationRef: any = Array.from(detailsRef.children)?.[0]
-    const location = locationRef?.innerText
-    const listedOn = detailsRef?.innerText?.split('\n').find((el: any) => el?.includes("Listed")) ?? ''
-    const isPetFriendly = dataRef?.innerText?.includes("Dog and cat friendly") ? "Dog and cat friendly" : ""
-    const unitDetailsDivRef = dataDivRef.find((item: any) => item.innerText.includes("Unit Details")) as HTMLElement
-    const unitDetailsText = unitDetailsDivRef?.innerText
+    const loca: any = gridRef?.querySelector("i[style*='-261px'],i[style*='-260px'],i[style*='-262px']")?.parentElement?.parentElement?.innerText
+
+    const propDetailsDiv = newDivRef?.find((el: any) => el.innerText.toLowerCase().includes('listed ') || el.innerText.toLowerCase().includes('dog and cat friendly') || el.innerText?.toLowerCase()?.includes("dog and cat-friendly") || el.innerText.toLowerCase().includes(' square feet'))
+
+
+    const propDetailsDivText = propDetailsDiv?.innerText ?? ''
+    const listedOn = propDetailsDivText?.split("\n")?.find((el: any) => el.includes("Listed ")) ?? ''
+    const isPetFriendly = propDetailsDivText?.toLowerCase()?.includes("dog and cat friendly") || propDetailsDivText?.toLowerCase()?.includes("dog and cat-friendly") ? "Dog and cat friendly" : ""
+    const sqft = propDetailsDivText?.split("\n")?.find((el: any) => el?.includes(" square feet")) ?? ''
+
+    const rentalLocationDiv = newDivRef.find((item: any) => item?.innerText?.toLowerCase()?.includes("property for rent location"))
+    const loc = rentalLocationDiv?.innerText?.replace('Rental Location', '')?.replace('Location is approximate', '')?.replace("undefined", '')?.replace("\n", '').replace("Property for rent location", '')
+
+    const unitDetailsDiv = newDivRef.find((item: any) => item?.innerText?.toLowerCase()?.includes("unit detail"))
+    const unitDetailsText = unitDetailsDiv?.innerText
     const bedrooms = unitDetailsText?.match(/(\d+)\s*(beds|beds)/)?.[0]?.replace(/( beds| bed)/g, '')
     const bathrooms = unitDetailsText?.match(/(\d+)\s*(baths|bath)/)?.[0]?.replace(/( baths| bath)/g, '')
-    const sqft = unitDetailsText?.match(/(\d+)\s*(square feet)/)?.[0]?.replace(/( square feet)/g, '') ?? ''
-    const unitDetails = unitDetailsText?.replace(/( Unit Details)/g, '') ?? ''
-    const descriptionDivRef = dataDivRef.find((item: any) => item.innerText.includes("Description")) as HTMLElement
-    const description = descriptionDivRef?.innerText?.replace(/(Description)/g, '') ?? ''
+    const unitDetails = unitDetailsText?.replace(/(Unit Details)/g, '') ?? ''
 
-    const sellerRef = document.querySelector("a[href*='/marketplace/profile/'][aria-label]") as HTMLElement
-    const sellerUrl = sellerRef?.getAttribute("href")
+    const propDescriptionDiv = newDivRef.find((item: any) => item?.innerText?.toLowerCase()?.includes("description"))
+    const allSpans = Array.from(propDescriptionDiv?.querySelectorAll('span')) as HTMLElement[]
+    const moreButton = allSpans.find(el => el.innerText == 'See more') as HTMLElement
+    moreButton?.click()
+    await asyncSleep(2)
+    const description = propDescriptionDiv?.innerText?.replace(/(Description)/g, '').replace("See less", "").replace("See translation", "") ?? ''
+
+    const sellerRef: any = document.querySelector("a[href*='/marketplace/profile/'][aria-label]") as HTMLElement
+    const sellerUrl = sellerRef?.href
     const sellerName = sellerRef?.getAttribute("aria-label")
-    const images = Array.from(document.querySelectorAll("div[aria-label*='Thumbnail'] img"))?.map((el: any) => el?.src)
+    const images = Array.from(document.querySelectorAll("div[aria-label*='Thumbnail'] img") ?? [])?.map((el: any) => el?.src)
+
     const itemId = getItemId(url)
     const folderid = await runTimeMessage({
         message: MESSAGING.CREATE_FOLDER,
         data: {
-            folderName: itemId
+            folderName: itemId,
         }
     })
     const imagesLink = []
     for (const imageIndex in images) {
-        await runTimeMessage({
+        const data = await runTimeMessage({
             message: MESSAGING.SAVE_IMAGE, data: {
                 folderid, imageIndex, imageUrl: images[imageIndex]
             }
         })
-        imagesLink.push(`${itemId}/${imageIndex}.jpg`)
+        const imageLink = `https://drive.google.com/file/d/${data?.id}/view`
+        imagesLink.push(imageLink)
     }
 
-    const sheetRowData = [url, title, price, location, sqft, isPetFriendly, listedOn, description, unitDetails, sellerUrl, images.join(" ")]
+    const imgFolder = `https://drive.google.com/drive/u/0/folders/${folderid}`
+
+    const sheetRowData = [url, itemId, title, price, loca, sqft, isPetFriendly, listedOn, description, unitDetails, sellerUrl, imgFolder]
+
     await runTimeMessage({
         message: MESSAGING.UPDATE_EXCEL_SHEET_DATA,
         data: {
@@ -75,6 +92,8 @@ const collectData = async (spreadsheetId: string) => {
         images
     }
 }
+
+
 
 const entry = () => {
     Browser.runtime.onMessage.addListener(async function (request: any) {

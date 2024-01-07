@@ -1,6 +1,6 @@
 import Browser from 'webextension-polyfill'
-import { setLocalStorage } from '../common/apis'
-import { tabMesage, waitForActiveTabLoads } from '../common/browerMethods'
+import { setLocalStorage, updateLocalData } from '../common/apis'
+import { getLocalStorage, runTimeMessage, tabMesage, waitForActiveTabLoads } from '../common/browerMethods'
 import { INITITAL_DATA, MESSAGING } from '../common/constants'
 import { createDriveFolder, createSheet, updateSheetData, uploadImage } from '../common/googleApis'
 
@@ -16,7 +16,8 @@ Browser.runtime.onMessage.addListener(async (request: any) => {
     },
 
     [MESSAGING.CREATE_EXCEL_FILE]: async () => {
-      return await createSheet('Marketplace rental data')
+      const excelFileName = `rental-data-${Date.now()}`
+      return await createSheet(excelFileName)
     },
     [MESSAGING.UPDATE_EXCEL_SHEET_DATA]: async () => {
       await updateSheetData(data.spreadsheetId, [data.row])
@@ -25,7 +26,9 @@ Browser.runtime.onMessage.addListener(async (request: any) => {
       return await uploadImage(data.folderid, data.imageIndex, data.imageUrl)
     },
     [MESSAGING.CREATE_FOLDER]: async () => {
-      return await createDriveFolder(data.folderName, [])
+      const ls = await getLocalStorage()
+      const parents = !!ls.parentFolderId ? [ls.parentFolderId] : []
+      return await createDriveFolder(data.folderName, parents)
     },
     [MESSAGING.WAIT_FOR_ACTIVE_TAB_LOADS]: async () => {
       await waitForActiveTabLoads()
@@ -36,5 +39,9 @@ Browser.runtime.onMessage.addListener(async (request: any) => {
 })
 
 Browser.runtime.onInstalled.addListener(async () => {
+  const parentFolderName = `rental-${Date.now()}`
+  const folderid = await await createDriveFolder(parentFolderName, [])
+  await updateLocalData({ parentFolderId: folderid })
+  INITITAL_DATA.parentFolderId = folderid
   await setLocalStorage(INITITAL_DATA)
 })

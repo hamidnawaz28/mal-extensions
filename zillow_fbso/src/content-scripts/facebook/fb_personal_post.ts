@@ -29,7 +29,6 @@ const entry = () => {
       const toPostImages = images?.slice(0, 20) || []
       for (const element of toPostImages) {
         await uploadImage(element)
-        await asyncSleep(4)
       }
       await iconButtonClick("Post")
       return true

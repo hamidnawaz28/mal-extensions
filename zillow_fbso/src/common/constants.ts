@@ -1,21 +1,23 @@
 const MESSAGING: Record<any, string> = {
-  UPLOAD_ITEM: 'UPLOAD_ITEM',
   SET_BLOB_FROM_URL: 'SET_BLOB_FROM_URL',
-  COLLECT_PROP_DATA: 'COLLECT_PROP_DATA',
   WAIT_FOR_ACTIVE_TAB_LOADS: 'WAIT_FOR_ACTIVE_TAB_LOADS',
   UPLOAD_DATA_TO_FB_PROP_SALE_MARKETPLACE: 'UPLOAD_DATA_TO_FB_PROP_SALE_MARKETPLACE',
-  UPLOAD_TO_FB_PAGE: 'UPLOAD_TO_FB_PAGE',
-  UPLOAD_TO_FB_PERSONAL_POST: 'UPLOAD_TO_FB_PERSONAL_POST',
+  UPLOAD_DATA_TO_FB_PAGE: 'UPLOAD_DATA_TO_FB_PAGE',
+  UPLOAD_DATA_TO_FB_PERSONAL_POST: 'UPLOAD_DATA_TO_FB_PERSONAL_POST',
+
   INVOKE_MARKEPLACE_LIST_PROCESS: "INVOKE_MARKEPLACE_LIST_PROCESS",
   INVOKE_PAGE_LIST_PROCESS: "INVOKE_PAGE_LIST_PROCESS",
-  COLLECT_ZILLOW_REVIEW_DATA: "COLLECT_ZILLOW_REVIEW_DATA"
+  INVOKE_FSBO_SCRAP_PROCESS: "INVOKE_FSBO_SCRAP_PROCESS",
+
+  COLLECT_FSBO_LISTING_DATA: "COLLECT_FSBO_LISTING_DATA",
+  COLLECT_AGENT_LISTING_DATA: "COLLECT_AGENT_LISTING_DATA"
 }
 
 const LISTING_TYPES = [
   {
-    label: "FBSO",
+    label: "FSBO",
     value: "FSBO_LISTING",
-    detailsText: "In the table below, you will see all of your scraped FSBO listings. The Listings will automatically connect with your Go High Level CRM. You can also download the list manually by clicking on the download button."
+    detailsText: "In the table below, you will see all of your scraped FSBO listings. The listings will automatically import directly into your CRM. You can also download the list manually by clicking on the download button"
   },
   {
     label: "Reviews",

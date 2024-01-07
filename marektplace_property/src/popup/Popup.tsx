@@ -5,6 +5,7 @@ import { getLocalStorage, updateLocalData } from '../common/apis'
 import { getAuthToken } from '../common/googleApis'
 import Browser from 'webextension-polyfill'
 import { HelpCenter } from '@mui/icons-material'
+
 const Popup = () => {
 
     const [spreadsheetId, setSpreadsheetid] = useState('')

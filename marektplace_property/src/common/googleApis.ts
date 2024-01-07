@@ -33,7 +33,7 @@ export async function uploadImage(folderId: string, imageName: string, imageUrl:
     };
     const response = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart", requestOptions)
     const data = await response.json()
-    return data.id
+    return data
 }
 
 

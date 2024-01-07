@@ -13,9 +13,10 @@ const MESSAGING: Record<string, string> = {
 
 const INITITAL_DATA = {
   props: [],
-  spreadsheetId: ""
+  spreadsheetId: "",
+  parentFolderId: ""
 }
-const SHEET_HEADERS = ["Link", "Title", "Price", "Location", "Sqr", "Pet", "Posted Time", "Description", "Unit details", "Seller Profile", "Images"]
+const SHEET_HEADERS = ["Link", "Property ID", "Title", "Price", "Location", "Sqr", "Pet", "Posted Time", "Description", "Unit details", "Seller Profile", "Images"]
 const FB_MARKETPLACE_RENTAL_PAGE = 'https://www.facebook.com/marketplace/category/propertyrentals'
 
 export { MESSAGING, INITITAL_DATA, FB_MARKETPLACE_RENTAL_PAGE, SHEET_HEADERS }
