@@ -1,0 +1,313 @@
+/* panel.css — Mac Trac B/W */
+#mactrac-btn {
+	position: fixed;
+	z-index: 2147483647;
+	right: 16px;
+	bottom: 16px;
+	width: 56px;
+	height: 56px;
+	background: #fff;
+	border: 2px solid #fffefe;
+	border-radius: 999px;
+	padding: 0;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+	cursor: pointer;
+	display: grid;
+	place-items: center;
+	overflow: hidden;
+}
+#mactrac-btn img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+#mactrac-btn:hover {
+	transform: translateY(-1px);
+}
+
+#mactrac-panel {
+	position: fixed;
+	z-index: 2147483647;
+	right: 16px;
+	bottom: 120px;
+	width: 420px;
+	max-height: 160vh;
+	background: #fff;
+	color: #e6e6e6;
+	border: 2px solid #ffffff;
+	border-radius: 16px;
+	overflow: hidden;
+	box-shadow: 0 14px 50px rgba(0, 0, 0, 0.45);
+	font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+		Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
+#mactrac-panel .mt-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 10px 12px;
+	font-weight: 800;
+	border-bottom: 2px solid #111;
+	background: #fff;
+}
+#mactrac-panel .mt-actions {
+	display: flex;
+	gap: 6px;
+}
+.mt-ghost {
+	background: #fff;
+	color: #111;
+	border: 2px solid #111;
+	padding: 6px 8px;
+	border-radius: 10px;
+	cursor: pointer;
+}
+.mt-ghost:hover {
+	background: #fdf6da;
+	color: #fff;
+}
+#mactrac-panel .mt-body {
+	padding: 10px 12px;
+	overflow: auto;
+	max-height: 44vh;
+}
+#mactrac-panel .mt-footer {
+	padding: 8px 12px;
+	font-size: 12px;
+	opacity: 0.8;
+	border-top: 2px solid #111;
+	background: #fff;
+}
+
+/* Daily log */
+.mt-log {
+	padding: 10px 12px;
+	border-bottom: 2px solid #111;
+	background: #fff;
+}
+.mt-log-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 6px;
+}
+.mt-log-actions {
+	display: flex;
+	gap: 6px;
+	align-items: center;
+}
+.mt-log-actions input[type="date"] {
+	padding: 6px 8px;
+	border: 2px solid #111;
+	border-radius: 8px;
+	background: #fff;
+	color: #111;
+}
+.mt-log-list {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	max-height: 18vh;
+	overflow: auto;
+}
+.mt-log-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	background: #fff;
+	border: 2px solid #111;
+	border-radius: 10px;
+	padding: 8px;
+}
+.mt-li-name {
+	font-weight: 700;
+}
+.mt-li-macros {
+	font-size: 12px;
+	opacity: 0.9;
+}
+.mt-li-serv {
+	opacity: 0.7;
+	margin-left: 6px;
+}
+.mt-li-del {
+	background: #fff;
+	border: 2px solid #111;
+	border-radius: 8px;
+	padding: 4px 6px;
+	cursor: pointer;
+}
+.mt-log-empty {
+	font-size: 12px;
+	opacity: 0.85;
+	background: #fff;
+	border: 2px dashed #111;
+	border-radius: 10px;
+	padding: 8px;
+	text-align: center;
+}
+.mt-log-totals {
+	margin-top: 6px;
+	font-size: 13px;
+	font-weight: 700;
+}
+
+/* Results cards */
+.mt-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 10px;
+}
+.mt-card {
+	background: #fff;
+	border-radius: 14px;
+	padding: 10px;
+	border: 2px solid #111;
+}
+.mt-title {
+	font-weight: 800;
+	margin-bottom: 8px;
+}
+.mt-macros > div {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 4px 0;
+}
+.mt-sub {
+	margin-top: 6px;
+	font-size: 12px;
+	opacity: 0.85;
+}
+.mt-model {
+	opacity: 0.7;
+	font-size: 12px;
+	margin-left: 6px;
+}
+.mt-assumptions {
+	margin-top: 10px;
+}
+.mt-assumptions summary {
+	cursor: pointer;
+}
+.mt-assumptions ul {
+	margin: 8px 0 0 16px;
+}
+.mt-spinner {
+	padding: 16px;
+	text-align: center;
+	font-weight: 700;
+}
+.mt-error {
+	padding: 10px;
+	background: #f5f5f5;
+	border: 2px solid #111;
+	border-radius: 8px;
+}
+.mt-add-hint {
+	margin-top: 8px;
+	font-size: 12px;
+	opacity: 0.8;
+}
+
+/* Calendar overlay (monochrome) */
+.mt-cal-overlay {
+	position: absolute;
+	inset: 48px 0 0 0;
+	background: #fff;
+	border-top: 2px solid #111;
+	display: none;
+	padding: 10px 12px;
+	overflow: auto;
+}
+.mt-cal-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 8px;
+}
+.mt-cal-nav {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-weight: 800;
+}
+.mt-cal-month {
+	min-width: 160px;
+	text-align: center;
+}
+.mt-cal-settings {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 8px;
+	margin-bottom: 8px;
+}
+.mt-cal-settings label {
+	display: flex;
+	flex-direction: column;
+	font-size: 12px;
+	gap: 4px;
+}
+.mt-cal-settings input,
+.mt-cal-settings select {
+	padding: 6px 8px;
+	border: 2px solid #111;
+	border-radius: 8px;
+	background: #fff;
+	color: #111;
+}
+.mt-cal-summary {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 8px;
+	font-size: 13px;
+	font-weight: 700;
+}
+
+.mt-cal-grid {
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	gap: 6px;
+}
+.mt-cal-grid .dow {
+	font-weight: 800;
+	font-size: 12px;
+	text-align: center;
+	opacity: 0.9;
+}
+.mt-cal-grid .cell {
+	background: #fff;
+	border: 2px solid #e7e7e7;
+	border-radius: 10px;
+	min-height: 58px;
+	padding: 6px;
+	cursor: pointer;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+.mt-cal-grid .cell.not-in-month {
+	opacity: 0.5;
+}
+.mt-cal-grid .cell.today {
+	box-shadow: inset 0 0 0 2px #111;
+}
+.mt-cal-grid .cell.over {
+	border-style: solid;
+}
+.mt-cal-grid .cell.under {
+	border-style: dashed;
+}
+.mt-cal-grid .cell .cell-top {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	font-size: 12px;
+}
+.mt-cal-grid .cell .kcal {
+	opacity: 0.9;
+	font-size: 11px;
+}

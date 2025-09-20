@@ -1,0 +1,16 @@
+{
+  "name": "Maruan FB Ads By Reach Lister",
+  "description": "maruan fb ads by reach lister",
+  "version": "1.0.0",
+  "manifest_version": 3,
+  "icons": {
+    "16": "logo-icon.png",
+    "32": "logo-icon.png",
+    "48": "logo-icon.png",
+    "128": "logo-icon.png"
+  },
+  "permissions": [],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
