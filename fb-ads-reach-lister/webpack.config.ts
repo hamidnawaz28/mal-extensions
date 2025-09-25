@@ -6,6 +6,7 @@ import ZipPlugin from 'zip-webpack-plugin'
 const config = {
   entry: {
     popup: '/src/popup/index.tsx',
+    contentScript: '/src/content-script/index.tsx',
   },
 
   module: {

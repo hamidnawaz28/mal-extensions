@@ -1,16 +1,20 @@
 {
   "name": "Maruan FB Ads By Reach Lister",
-  "description": "maruan fb ads by reach lister",
+  "description": "Lists Facebook ads by their reach on the Facebook Ads Library",
   "version": "1.0.0",
   "manifest_version": 3,
   "icons": {
-    "16": "logo-icon.png",
-    "32": "logo-icon.png",
-    "48": "logo-icon.png",
-    "128": "logo-icon.png"
+    "16": "logo.png",
+    "32": "logo.png",
+    "48": "logo.png",
+    "128": "logo.png"
   },
-  "permissions": [],
-  "action": {
-    "default_popup": "popup.html"
-  }
+  "permissions": ["activeTab", "scripting", "storage"],
+  "host_permissions": ["https://www.facebook.com/ads/library/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://www.facebook.com/ads/library/*"],
+      "js": ["contentScript.js"]
+    }
+  ]
 }
