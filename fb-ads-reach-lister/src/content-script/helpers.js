@@ -125,7 +125,7 @@ async function closeDialog(dialogRef, timeout = 5000) {
 
       if (Date.now() - start > timeout) {
         clearInterval(interval)
-        reject(new Error('Dialog did not close in time'))
+        reject()
       }
     }, 300)
   })
@@ -147,7 +147,9 @@ const clickTransparencyButton = (dialogRef) => {
 
 const getDaysCount = (dialogRef) => {
   const adDateReach = findElementContainingText(dialogRef, 'span', 'Started running on')
-  const adDate = adDateReach?.innerText?.match(/([A-Za-z]{3} \d{1,2},? \d{4})/)?.[1]
+  const adDate = adDateReach?.innerText?.match(
+    /(?:[A-Za-z]{3} \d{1,2},? \d{4}|\d{1,2} [A-Za-z]{3} \d{4})/,
+  )?.[0]
   return countDays(adDate)
 }
 

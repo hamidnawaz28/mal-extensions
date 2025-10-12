@@ -1,0 +1,35 @@
+
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Mac Trac Options</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; padding: 20px; max-width: 720px; margin: auto; color:#111; background:#fff; }
+    label { display: block; margin-top: 16px; font-weight: 700; }
+    input[type="text"], input[type="password"] { width: 100%; padding: 10px; border: 2px solid #111; border-radius: 8px; background:#fff; color:#111; }
+    .row { display: grid; grid-template-columns: 1fr 160px; gap: 8px; align-items: end; }
+    button { padding: 10px 12px; border: 2px solid #111; background: #fff; color: #111; border-radius: 8px; cursor: pointer; font-weight:700; }
+    button:hover { background:#111; color:#fff; }
+    .hint { opacity: 0.8; margin-top: 8px; font-size: 14px; }
+    .saved { color: #111; display: none; margin-left: 8px; font-weight:700; }
+  </style>
+</head>
+<body>
+  <h1>Mac Trac – Options</h1>
+  <p>Optional: override the built-in API key or model here. If left blank, the extension uses the default placeholder key.</p>
+
+  <label for="apiKey">OpenAI API Key</label>
+  <div class="row">
+    <input type="password" id="apiKey" placeholder="sk-..." />
+    <button id="save">Save</button>
+  </div>
+  <div class="hint">Key is stored in your browser's local extension storage.</div>
+  <div id="saved" class="saved">Saved!</div>
+
+  <label for="model">Model (optional)</label>
+  <input type="text" id="model" placeholder="gpt-4o-mini (default)" />
+
+  <script src="options.js"></script>
+</body>
+</html>
