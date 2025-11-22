@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Ride Auto Accepter",
+  "version": "1.0",
+  "description": "Auto-refresh and accept rides when available.",
+  "permissions": ["activeTab", "scripting"],
+  "content_scripts": [
+    {
+      "matches": ["https://portal.kaizenhealth.org/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "icons": {
+    "128": "logo.png"
+  }
+}

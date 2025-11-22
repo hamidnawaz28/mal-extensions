@@ -1,0 +1,3 @@
+export const MESSAGING = {
+  SET_BLOB_FROM_URL: 'SET_BLOB_FROM_URL',
+}

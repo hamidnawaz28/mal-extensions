@@ -29,7 +29,6 @@ const SummaryItem = ({ itemDetail }) => {
         flexDirection: 'column',
         alignItems: 'center',
         borderRadius: 6,
-        p: '10px',
         py: '20px',
         backgroundColor: theme.palette.background.default,
         boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
