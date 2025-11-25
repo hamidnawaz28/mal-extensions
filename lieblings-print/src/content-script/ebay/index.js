@@ -1,20 +1,26 @@
+import Browser from 'webextension-polyfill'
 import { asyncSleep } from '../../common/utils'
 
 async function keepAddingButtons() {
   console.log('-----ebay')
   await asyncSleep(3000)
   const logoRef = document.querySelector('.str-seller-card__store-name')
-  const concentButton = document.createElement('button')
-  concentButton.innerText = 'Get concent'
 
-  logoRef.appendChild(concentButton)
+  const authButton = buttonInstance('Get Auth', 'get-auth')
+  authButton.addEventListener('click', () => {
+    Browser.runtime.sendMessage({
+      action: 'OPEN_OAUTH',
+    })
+  })
+  logoRef.appendChild(authButton)
+
   setInterval(async () => {
     const items = document.querySelectorAll('ul li[data-listingid]')
 
     items.forEach((item) => {
       const uploadButton = item.querySelector('#upload-to-temu')
 
-      const btn = buttonInstance()
+      const btn = buttonInstance('Upload on Temu', 'upload-to-temu')
       btn.addEventListener('click', () => {
         const itemId = item.dataset.listingid
         console.log('Button clicked for:', itemId)
@@ -26,11 +32,10 @@ async function keepAddingButtons() {
   }, 1000)
 }
 
-const buttonInstance = () => {
+const buttonInstance = (title, id) => {
   const btn = document.createElement('button')
-  btn.innerText = 'Upload on Temu'
-  btn.id = 'upload-to-temu'
-
+  btn.innerText = title
+  btn.id = id
   btn.style.padding = '10px 16px'
   btn.style.border = 'none'
   btn.style.borderRadius = '8px'
@@ -55,4 +60,5 @@ const buttonInstance = () => {
   }
   return btn
 }
+
 keepAddingButtons()
