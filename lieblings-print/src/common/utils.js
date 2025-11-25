@@ -1,12 +1,19 @@
+import Browser from 'webextension-polyfill'
 import { getBlogStorage, runTimeMessage, setBlobStorage } from './browserMethods'
 import { MESSAGING } from './const'
 
-export const writeTextToRef = (ref, text) => {
+export const browserRef = Browser
+
+const writeTextToRef = (ref, text) => {
   ref.focus()
   document.execCommand('insertText', false, text)
 }
 
-export function waitTillRefDisappear(refElement, maxTime = 40000, intervalTime = 500) {
+function asyncSleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+function waitTillRefDisappear(refElement, maxTime = 40000, intervalTime = 500) {
   return new Promise((resolve, reject) => {
     const start = Date.now()
 
@@ -23,18 +30,20 @@ export function waitTillRefDisappear(refElement, maxTime = 40000, intervalTime =
     }, intervalTime)
   })
 }
-export const getBlobFromImgUrl = async (imageUrl) => {
+const getBlobFromImgUrl = async (imageUrl) => {
   const resp = await fetch(imageUrl, { mode: 'no-cors' }).then((response) => response.blob())
   return await blobToBase64(resp)
 }
 
-export const findElementWithText = (selector, text) =>
+const findElementWithText = (selector, text) =>
   Array.from(document.querySelectorAll(selector)).find(
     (el) => el?.innerText?.toLowerCase() == text?.toLowerCase(),
   )
 
-export const getNodeIndex = (nodeRef) => Array.from(nodeRef.parentNode.children).indexOf(nodeRef)
-export const removeCm = (value) => value.replace(' cm', '')
+const getNodeIndex = (nodeRef) => Array.from(nodeRef.parentNode.children).indexOf(nodeRef)
+
+const removeCm = (value) => value.replace(' cm', '')
+
 async function blobToBase64(blob) {
   return new Promise((resolve, _) => {
     const reader = new FileReader()
@@ -43,7 +52,7 @@ async function blobToBase64(blob) {
   })
 }
 
-export async function uploadImage(imageUrl, uploadRef) {
+async function uploadImage(imageUrl, uploadRef) {
   let imageBlob = null
 
   await runTimeMessage({
@@ -60,4 +69,30 @@ export async function uploadImage(imageUrl, uploadRef) {
   const dropEvent = new DragEvent('drop', { bubbles: true, dataTransfer: new DataTransfer() })
   dropEvent?.dataTransfer?.items.add(image)
   uploadRef?.dispatchEvent(dropEvent)
+}
+
+async function waitForElement(mainGridSelector, maxRetries = 50, interval = 2000) {
+  const retries = 0
+  const foundElement = false
+
+  while (foundElement === false && retries < maxRetries) {
+    const mainDiv = await mainGridSelector()
+
+    if (mainDiv) return mainDiv
+    await new Promise((res) => setTimeout(res, interval))
+  }
+  throw new Error('Element not found: ')
+}
+
+export {
+  writeTextToRef,
+  asyncSleep,
+  waitTillRefDisappear,
+  findElementWithText,
+  getBlobFromImgUrl,
+  blobToBase64,
+  waitForElement,
+  uploadImage,
+  getNodeIndex,
+  removeCm,
 }

@@ -8,7 +8,7 @@ const config = {
     popup: '/src/popup/index.tsx',
     ebay: '/src/content-script/ebay/index.js',
     temu: '/src/content-script/temu/index.js',
-    background: '/src/background.js',
+    background: '/src/background/background.js',
   },
 
   module: {

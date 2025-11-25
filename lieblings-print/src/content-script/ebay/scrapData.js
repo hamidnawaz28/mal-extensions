@@ -1,6 +1,6 @@
-import { findElementWithText } from '../../common/utilsMethods'
+import { findElementWithText } from '../../common/utils'
 
-export const collectData = () => {
+export const scrapData = () => {
   const data = {}
   data.title = document.querySelector('.x-item-title__mainTitle').innerText
   data.price = document

@@ -1,16 +1,18 @@
 import Browser from 'webextension-polyfill'
 import { asyncSleep } from './utils'
 
-const syncRef = Browser.storage.sync
-const localRef = Browser.storage.local
+const browserRef = Browser
+
+const syncRef = browserRef.storage.sync
+const localRef = browserRef.storage.local
 
 export const STORE_NAME = 'LEIBILINGS_PRINT'
 
-async function setSyncStorage(data: any) {
+async function setSyncStorage(data) {
   await syncRef.set({ [STORE_NAME]: data })
 }
 
-async function setLocalStorage(data: any) {
+async function setLocalStorage(data) {
   await localRef.set({ [STORE_NAME]: data })
 }
 
@@ -24,42 +26,42 @@ async function getLocalStorage() {
   return data[STORE_NAME]
 }
 
-async function updateLocalStorage(newData: any) {
+async function updateLocalStorage(newData) {
   const localStorage = await getLocalStorage()
   const newStorage = { ...localStorage, ...newData }
   await setLocalStorage(newStorage)
 }
 
-async function sendActiveTabMesage(data: any) {
+async function sendActiveTabMesage(data) {
   const activeTab = await activeTabData()
-  return await Browser.tabs.sendMessage(activeTab.id, { ...data })
+  return await browserRef.tabs.sendMessage(activeTab.id, { ...data })
 }
 
-async function sendTabMesageWithId(tabId: number, data: any) {
-  return await Browser.tabs.sendMessage(tabId, { ...data })
+async function sendTabMesageWithId(tabId, data) {
+  return await browserRef.tabs.sendMessage(tabId, { ...data })
 }
 
-async function runTimeMessage(data: any) {
-  return await Browser.runtime.sendMessage(data)
+async function runTimeMessage(data) {
+  return await browserRef.runtime.sendMessage(data)
 }
 
-async function reloadATab(tabId: number) {
-  await Browser.tabs.reload(tabId)
+async function reloadATab(tabId) {
+  await browserRef.tabs.reload(tabId)
 }
 
-async function createATab(url: string) {
-  return await Browser.tabs.create({ url })
+async function createATab(url) {
+  return await browserRef.tabs.create({ url })
 }
 
-async function updateATabUrl(tabId: number, url: string, wait = false) {
-  await Browser.tabs.update(tabId, { url })
+async function updateATabUrl(tabId, url, wait = false) {
+  await browserRef.tabs.update(tabId, { url })
   wait ? await waitTillTabLoads(tabId) : null
 }
 
-async function updateActiveTabUrl(url: string, wait = false) {
+async function updateActiveTabUrl(url, wait = false) {
   const activeTab = await activeTabData()
   const activeTabId = activeTab.id
-  await Browser.tabs.update(activeTabId, { url })
+  await browserRef.tabs.update(activeTabId, { url })
   wait ? await waitTillTabLoads(activeTabId) : null
 }
 
@@ -69,41 +71,41 @@ async function waitTillActiveTabLoads() {
   await waitTillTabLoads(activeTabId)
 }
 
-async function waitTillTabLoads(tabId: number) {
+async function waitTillTabLoads(tabId) {
   await asyncSleep(0.5)
 
-  const tab = await Browser.tabs.get(tabId)
+  const tab = await browserRef.tabs.get(tabId)
   if (tab.status == 'loading') {
     await waitTillTabLoads(tabId)
   } else return
 }
 
 async function activeTabData() {
-  const tabsData: any = await Browser.tabs.query({
+  const tabsData = await browserRef.tabs.query({
     active: true,
   })
   return tabsData[0]
 }
 
-async function textOnAppIcon(iconText: string, tabId: number) {
-  await Browser.action.setBadgeText({
+async function textOnAppIcon(iconText, tabId) {
+  await browserRef.action.setBadgeText({
     text: iconText,
     tabId,
   })
 }
 
-const updateAdData = async (data: any) => {
+const updateAdData = async (data) => {
   const localStorage = await getLocalStorage()
   const newStorage = { ...localStorage, data: [...localStorage.data, ...data] }
   await setLocalStorage(newStorage)
 }
 
-const updateProcessingStatus = async (isProcessing: boolean) => {
+const updateProcessingStatus = async (isProcessing) => {
   const localStorage = await getLocalStorage()
   const newStorage = { ...localStorage, isProcessing: isProcessing }
   await setLocalStorage(newStorage)
 }
-async function setBlobStorage(imageBlog: any) {
+async function setBlobStorage(imageBlog) {
   await localRef.set({ imageBlog: imageBlog })
 }
 
@@ -112,7 +114,19 @@ async function getBlogStorage() {
   return data['imageBlog']
 }
 
+async function closeWindowIfExists(windowId) {
+  try {
+    await browserRef.windows.get(windowId)
+
+    await browserRef.windows.remove(windowId)
+    console.log('Window removed:', windowId)
+  } catch (e) {
+    console.log('Window does not exist anymore:', windowId)
+  }
+}
+
 export {
+  closeWindowIfExists,
   setLocalStorage,
   getLocalStorage,
   setSyncStorage,

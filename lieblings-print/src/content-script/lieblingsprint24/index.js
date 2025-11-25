@@ -1,12 +1,12 @@
 // Add a new order button on lieblingsprint24 orders page
 // https://lieblingsprint24.shop/wp-admin/admin.php?page=wc-orders&action=new
 
-import { asyncSleep } from '../../common/utils'
 import {
+  asyncSleep,
   findElementWithText,
   waitTillRefDisappear,
   writeTextToRef,
-} from '../../common/utilsMethods'
+} from '../../common/utils'
 
 const placeOrder = async (data) => {
   findElementWithText("button[type='button']", 'Bestellposition(en) hinzufügen').click()

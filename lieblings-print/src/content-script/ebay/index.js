@@ -1,15 +1,19 @@
 import Browser from 'webextension-polyfill'
+import { MESSAGING } from '../../common/const'
 import { asyncSleep } from '../../common/utils'
+import { DUMMY_DATA } from './dummyData'
 
 async function keepAddingButtons() {
-  console.log('-----ebay')
-  await asyncSleep(3000)
+  await Browser.runtime.sendMessage({
+    action: MESSAGING.WAIT_TILL_ACTIVE_TAB_LOADS,
+  })
+  await asyncSleep(1000)
   const logoRef = document.querySelector('.str-seller-card__store-name')
 
   const authButton = buttonInstance('Get Auth', 'get-auth')
   authButton.addEventListener('click', () => {
     Browser.runtime.sendMessage({
-      action: 'OPEN_OAUTH',
+      action: MESSAGING.OPEN_OAUTH,
     })
   })
   logoRef.appendChild(authButton)
@@ -23,7 +27,7 @@ async function keepAddingButtons() {
       const btn = buttonInstance('Upload on Temu', 'upload-to-temu')
       btn.addEventListener('click', () => {
         const itemId = item.dataset.listingid
-        console.log('Button clicked for:', itemId)
+        console.log('Button clicked for:', DUMMY_DATA)
       })
       if (!uploadButton) {
         item.appendChild(btn)

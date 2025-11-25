@@ -1,12 +1,12 @@
 import { updateActiveTabUrl, waitTillActiveTabLoads } from '../../common/browserMethods'
-import { asyncSleep } from '../../common/utils'
 import {
+  asyncSleep,
   findElementWithText,
   getNodeIndex,
   removeCm,
   uploadImage,
   writeTextToRef,
-} from '../../common/utilsMethods'
+} from '../../common/utils'
 import { DUMMY_DATA } from '../ebay/dummyData'
 
 const COLOR_VARIANT = 'Weib'
