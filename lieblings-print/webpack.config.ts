@@ -7,7 +7,7 @@ const config = {
   entry: {
     popup: '/src/popup/index.tsx',
     ebay: '/src/content-script/ebay/index.js',
-    temu: '/src/content-script/temu/index.js',
+    addTemuProduct: '/src/content-script/temu/addProduct.js',
     background: '/src/background/background.js',
   },
 

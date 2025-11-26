@@ -1,5 +1,5 @@
 import Browser from 'webextension-polyfill'
-import { MESSAGING } from '../../common/const'
+import { MESSAGING, TEMU_MESSAGES } from '../../common/const'
 import { asyncSleep } from '../../common/utils'
 import { DUMMY_DATA } from './dummyData'
 
@@ -8,29 +8,31 @@ async function keepAddingButtons() {
     action: MESSAGING.WAIT_TILL_ACTIVE_TAB_LOADS,
   })
   await asyncSleep(1000)
-  const logoRef = document.querySelector('.str-seller-card__store-name')
-
-  const authButton = buttonInstance('Get Auth', 'get-auth')
-  authButton.addEventListener('click', () => {
-    Browser.runtime.sendMessage({
-      action: MESSAGING.OPEN_OAUTH,
-    })
-  })
-  logoRef.appendChild(authButton)
-
+  // Browser.runtime.sendMessage({
+  //   action: MESSAGING.OPEN_OAUTH,
+  // })
   setInterval(async () => {
-    const items = document.querySelectorAll('ul li[data-listingid]')
+    // const items = document.querySelectorAll('ul li[data-listingid]')
+    const items = document.querySelectorAll('#__next') //FOR HAMID.COM
 
     items.forEach((item) => {
       const uploadButton = item.querySelector('#upload-to-temu')
 
       const btn = buttonInstance('Upload on Temu', 'upload-to-temu')
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', async () => {
         const itemId = item.dataset.listingid
-        console.log('Button clicked for:', DUMMY_DATA)
+        // const itemData = await Browser.runtime.sendMessage({
+        //   action: MESSAGING.GET_EBAY_ITEM_DATA,
+        //   itemId: itemId,
+        // })
+
+        await Browser.runtime.sendMessage({
+          action: TEMU_MESSAGES.INJECT_ADD_PRODUCT_SCRIPT,
+          itemData: DUMMY_DATA,
+        })
       })
       if (!uploadButton) {
-        item.appendChild(btn)
+        item.prepend(btn)
       }
     })
   }, 1000)

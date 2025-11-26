@@ -42,7 +42,7 @@ const findElementWithText = (selector, text) =>
 
 const getNodeIndex = (nodeRef) => Array.from(nodeRef.parentNode.children).indexOf(nodeRef)
 
-const removeCm = (value) => value.replace(' cm', '')
+const removeCm = (value) => value.replace(/\s?(cm|kg)/g, '')
 
 async function blobToBase64(blob) {
   return new Promise((resolve, _) => {

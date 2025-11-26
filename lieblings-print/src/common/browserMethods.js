@@ -1,4 +1,5 @@
 import Browser from 'webextension-polyfill'
+import { MESSAGING } from './const'
 import { asyncSleep } from './utils'
 
 const browserRef = Browser
@@ -65,6 +66,20 @@ async function updateActiveTabUrl(url, wait = false) {
   wait ? await waitTillTabLoads(activeTabId) : null
 }
 
+async function updateActiveTabUrlBackground(url, wait = false) {
+  await Browser.runtime.sendMessage({
+    action: MESSAGING.UPDATE_ACTIVE_TAB_URL,
+    url,
+    shouldWait: wait,
+  })
+}
+
+async function waitTillActiveTabLoadsBackground() {
+  await Browser.runtime.sendMessage({
+    action: MESSAGING.WAIT_TILL_ACTIVE_TAB_LOADS,
+  })
+}
+
 async function waitTillActiveTabLoads() {
   const activeTab = await activeTabData()
   const activeTabId = activeTab.id
@@ -126,6 +141,8 @@ async function closeWindowIfExists(windowId) {
 }
 
 export {
+  updateActiveTabUrlBackground,
+  waitTillActiveTabLoadsBackground,
   closeWindowIfExists,
   setLocalStorage,
   getLocalStorage,

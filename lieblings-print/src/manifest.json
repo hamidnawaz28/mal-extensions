@@ -22,8 +22,14 @@
     },
     {
       "run_at": "document_end",
-      "matches": ["https://seller-eu.temu.com/*"],
-      "js": ["temu.js"]
+      "matches": ["https://www.hamidnawaz.com/*"],
+      "js": ["ebay.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["addTemuProduct.js"],
+      "matches": ["https://seller-eu.temu.com/*"]
     }
   ]
 }

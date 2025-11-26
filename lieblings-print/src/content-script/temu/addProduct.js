@@ -1,35 +1,52 @@
-import { updateActiveTabUrl, waitTillActiveTabLoads } from '../../common/browserMethods'
+import { TEMU_MESSAGES } from '../../common/const'
 import {
   asyncSleep,
+  browserRef,
   findElementWithText,
   getNodeIndex,
   removeCm,
   uploadImage,
   writeTextToRef,
 } from '../../common/utils'
-import { DUMMY_DATA } from '../ebay/dummyData'
 
 const COLOR_VARIANT = 'Weib'
+const DEFAULT_CUP_WEIGHT_GRAMS = 330
 
-export const temuScript = async () => {
-  const addNewProductUrl = 'https://seller-eu.temu.com/goods-category.html'
-  await updateActiveTabUrl(addNewProductUrl)
-  // Init step
+browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
+  if (msg.action === TEMU_MESSAGES.ENTER_INITIAL_DETAILS) {
+    await addInitialDetails(msg.itemData)
+    sendResponse({})
+  }
+  if (msg.action === TEMU_MESSAGES.CLICK_ON_NEXT_BUTTON) {
+    await clickNextButton()
+    await asyncSleep(10000)
+    sendResponse({})
+  }
+  if (msg.action === TEMU_MESSAGES.ENTER_REMAINING_DETAILS) {
+    await addRemainingDetails(msg.itemData)
+    sendResponse({})
+  }
+  return true
+})
+
+const addInitialDetails = async (itemData) => {
   await asyncSleep(2000)
-  await writeTitle()
+  await writeTitle(itemData)
   await selectCategory()
-  await clickNextButton()
-  await waitTillActiveTabLoads()
-  clickOnBrandButton()
+}
+
+export const addRemainingDetails = async (itemData) => {
   // Step 1
-  await addProductDescriptoion()
+  await asyncSleep(1000)
+  await clickOnBrandButton()
+  await addProductDescription(itemData)
   await clickNextButton()
   // Step 2
   await selectMaterial()
   await clickNextButton()
   // Step 2
   await selectColorVariation()
-  await addProductDetails()
+  await addProductDetails(itemData)
   await clickNextButton()
   await asyncSleep(2000)
   // Step 3
@@ -39,7 +56,7 @@ export const temuScript = async () => {
   //step 4
   await selectManufaturarTime()
   await selectCountryOfOrigin()
-  await addProductIdentification()
+  await addProductIdentification(itemData)
   await clickSubmitButton()
   await asyncSleep(4000)
   await clickCancelButton()
@@ -67,14 +84,14 @@ const selectManufaturarTime = async () => {
   await asyncSleep(1000)
 }
 
-const addProductIdentification = async () => {
+const addProductIdentification = async (itemData) => {
   const productIdentificationRef = findElementWithText(
     '[data-testid="beast-core-grid-col-wrapper"]',
     '*Product Identification',
   ).parentElement.querySelector('input')
   productIdentificationRef.click()
   await asyncSleep(1000)
-  writeTextToRef(productIdentificationRef, DUMMY_DATA.itemId)
+  writeTextToRef(productIdentificationRef, itemData.itemId)
   await asyncSleep(1000)
 }
 const selectCountryOfOrigin = async () => {
@@ -87,7 +104,7 @@ const selectCountryOfOrigin = async () => {
   findElementWithText('[class^="countryTag"]', 'Germany').click()
   await asyncSleep(1000)
 }
-const addProductDetails = async () => {
+const addProductDetails = async (itemData) => {
   const variantDetailsRef = findElementWithText(
     '[data-testid="beast-core-table-body-tr"] td',
     COLOR_VARIANT,
@@ -100,40 +117,44 @@ const addProductDetails = async () => {
     variantDetailsRef[sellerFullfillmentQuatityIndex].querySelector('input')
   writeTextToRef(
     sellerFullfillmentQuatityRef,
-    DUMMY_DATA.estimatedAvailabilities[0].estimatedAvailableQuantity,
+    itemData.estimatedAvailabilities[0].estimatedAvailableQuantity,
   )
-  await addWeight(variantDetailsRef)
+  await addWeight(itemData, variantDetailsRef)
 
-  await addDimentions(variantDetailsRef)
+  await addDimensions(itemData, variantDetailsRef)
   const imagesIndex = getNodeIndex(findElementWithText('thead th', 'Images'))
-  await uploadImages(variantDetailsRef[imagesIndex])
+  await uploadImages(itemData, variantDetailsRef[imagesIndex])
   const basePriceIndex = getNodeIndex(findElementWithText('thead th', 'Base price'))
   const basePriceRef = variantDetailsRef[basePriceIndex].querySelector('input')
-  writeTextToRef(basePriceRef, DUMMY_DATA.price.convertedFromValue)
+  writeTextToRef(basePriceRef, itemData.price.convertedFromValue)
 
   const recommendedRetailPriceIndex = getNodeIndex(
     findElementWithText('thead th', 'Recommended retail price'),
   )
   const recommendedRetailPriceRef =
     variantDetailsRef[recommendedRetailPriceIndex].querySelector('input')
-  writeTextToRef(recommendedRetailPriceRef, DUMMY_DATA.price.convertedFromValue + 2)
+  writeTextToRef(recommendedRetailPriceRef, itemData.price.convertedFromValue + 2)
 }
 
-const addWeight = async (variantDetailsRef) => {
+const addWeight = async (itemData, variantDetailsRef) => {
   const packageWeightIndex = getNodeIndex(findElementWithText('thead th', 'Package weight'))
   const packageWeightRef = variantDetailsRef[packageWeightIndex].querySelector('input')
-  const localData = DUMMY_DATA.localizedAspects
+  const localData = itemData.localizedAspects
   const getWeightRef = localData.find((aspect) => aspect.name === 'Gewicht')
-  if (getWeightRef) writeTextToRef(packageWeightRef, removeCm(getWeightRef.value))
+  const weightValue = getWeightRef?.value
+  if (weightValue) {
+    const weight = Number(removeCm(weightValue))
+    writeTextToRef(packageWeightRef, weight ? weight * 1000 : DEFAULT_CUP_WEIGHT_GRAMS)
+  }
 }
 
-const addDimentions = async (variantDetailsRef) => {
+const addDimensions = async (itemData, variantDetailsRef) => {
   const packageDimensionIndex = getNodeIndex(findElementWithText('thead th', 'Package dimension'))
 
   variantDetailsRef[packageDimensionIndex]
     .querySelectorAll('[data-testid="beast-core-grid-col-wrapper"]')
     .click()
-  const localData = DUMMY_DATA.localizedAspects
+  const localData = itemData.localizedAspects
 
   const lengthRef = document.querySelector('input[placeholder="Longest side"]')
   const getLengthRef = localData.find((aspect) => aspect.name === 'Höhe')
@@ -148,8 +169,8 @@ const addDimentions = async (variantDetailsRef) => {
   if (getHeightRef) writeTextToRef(heightRef, removeCm(getHeightRef.value))
 }
 
-const uploadImages = async (imageCellRef) => {
-  let allImages = [DUMMY_DATA.image, ...DUMMY_DATA.additionalImages]
+const uploadImages = async (itemData, imageCellRef) => {
+  let allImages = [itemData.image, ...itemData.additionalImages]
   imageCellRef.querySelector("[class^='imgsPopBtn']").click()
   await asyncSleep(2000)
   const toAddImagesRef = Array.from(document.querySelectorAll('[data-testid="beast-core-upload"]'))
@@ -189,26 +210,33 @@ const selectMaterial = async () => {
   findElementWithText('ul li div', 'Ceramic').click()
   await asyncSleep(1000)
 }
-const writeTitle = async () => {
+const writeTitle = async (itemData) => {
   const productTitleRef = document.querySelector("[placeholder='Please enter a product name']")
-  writeTextToRef(productTitleRef, DUMMY_DATA.title)
+  writeTextToRef(productTitleRef, itemData.title)
   await asyncSleep(1000)
 }
 const clickOnBrandButton = async () => {
-  document.querySelector('[data-testid="beast-core-checkbox-checkIcon"]').click()
+  await asyncSleep(1000)
+
+  findElementWithText('[data-testid="beast-core-checkbox"]', 'This product does not have a brand')
+    .querySelector('input')
+    .click()
+  await asyncSleep(1000)
 }
 
-const addProductDescriptoion = async () => {
+const addProductDescription = async (itemData) => {
   const descriptionRef = document.querySelector(
     "[placeholder='Please enter a product description']",
   )
-  writeTextToRef(descriptionRef, DUMMY_DATA.shortDescription)
+  descriptionRef.click()
+  await asyncSleep(500)
+  writeTextToRef(descriptionRef, itemData.shortDescription)
   await asyncSleep(500)
 }
 const clickNextButton = async () => {
   const nextBtn = findElementWithText("[role='button'] div", 'Next')
   nextBtn?.click()
-  await asyncSleep(1000)
+  await asyncSleep(4000)
 }
 const clickSubmitButton = async () => {
   const nextBtn = findElementWithText("[role='button'] div", 'Submit')
@@ -220,7 +248,6 @@ const clickCancelButton = async () => {
   nextBtn?.click()
   await asyncSleep(1000)
 }
-//  603345645337547
 
 const clickOkButton = async () => {
   const nextBtn = findElementWithText("[role='button'] div", 'Save')
@@ -238,8 +265,10 @@ const selectCategory = async () => {
   const categoryTextFieldRef = document.querySelector(
     '[data-testid="beast-core-cascader-input"] [class^="IPT_input"] input',
   )
+  categoryTextFieldRef.click()
+  await asyncSleep(1500)
   writeTextToRef(categoryTextFieldRef, categoryOption)
-  await asyncSleep(1000)
+  await asyncSleep(1500)
   let foundOption = false
   while (!foundOption) {
     await asyncSleep(500)

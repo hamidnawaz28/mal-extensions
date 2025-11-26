@@ -1,13 +1,16 @@
 import axios from 'axios'
 
 import { closeWindowIfExists, setLocalStorage } from '../common/browserMethods'
+import { EBAY } from '../common/const'
 import { browserRef } from '../common/utils'
 
 export const runLoginFlow = async () => {
+  const scopeString = EBAY.SCOPES.join('%20')
   let config = {
     method: 'get',
-    url: 'https://auth.ebay.com/oauth2/authorize?client_id=hamidnaw-Liebling-PRD-66e90c06a-7c6994e0&response_type=code&redirect_uri=hamid_nawaz-hamidnaw-Liebli-koxfrczys&scope=https://api.ebay.com/oauth/api_scope%20https://api.ebay.com/oauth/api_scope/sell.marketing.readonly%20https://api.ebay.com/oauth/api_scope/sell.marketing%20https://api.ebay.com/oauth/api_scope/sell.inventory.readonly%20https://api.ebay.com/oauth/api_scope/sell.inventory%20https://api.ebay.com/oauth/api_scope/sell.account.readonly%20https://api.ebay.com/oauth/api_scope/sell.account%20https://api.ebay.com/oauth/api_scope/sell.fulfillment.readonly%20https://api.ebay.com/oauth/api_scope/sell.fulfillment%20https://api.ebay.com/oauth/api_scope/sell.analytics.readonly%20https://api.ebay.com/oauth/api_scope/sell.finances%20https://api.ebay.com/oauth/api_scope/sell.payment.dispute%20https://api.ebay.com/oauth/api_scope/commerce.identity.readonly%20https://api.ebay.com/oauth/api_scope/sell.reputation%20https://api.ebay.com/oauth/api_scope/sell.reputation.readonly%20https://api.ebay.com/oauth/api_scope/commerce.notification.subscription%20https://api.ebay.com/oauth/api_scope/commerce.notification.subscription.readonly%20https://api.ebay.com/oauth/api_scope/sell.stores%20https://api.ebay.com/oauth/api_scope/sell.stores.readonly%20https://api.ebay.com/oauth/scope/sell.edelivery%20https://api.ebay.com/oauth/api_scope/commerce.vero%20https://api.ebay.com/oauth/api_scope/sell.inventory.mapping%20https://api.ebay.com/oauth/api_scope/commerce.message%20https://api.ebay.com/oauth/api_scope/commerce.feedback%20https://api.ebay.com/oauth/api_scope/commerce.shipping',
+    url: `${EBAY.AUTH_BASE_URL}oauth2/authorize?client_id=${EBAY.CLIENT_ID}&response_type=code&redirect_uri=${EBAY.REDIRECT_URI}&scope=${scopeString}`,
   }
+
   const windowTab = await browserRef.windows.create({
     url: config.url,
     type: 'popup',
@@ -23,11 +26,10 @@ export const runLoginFlow = async () => {
 
 function attachTabListeners(tabId, windowId) {
   let updateDetected = false
-  const redirectUrl = 'https://auth2.ebay.com/oauth2/ThirdPartyAuthSucessFailure?isAuthSuccessful='
 
   browserRef.tabs.onUpdated.addListener(async (updatedTabId, changeInfo, tab) => {
     if (updatedTabId !== tabId) return
-    if (updateDetected === false && tab.url.includes(redirectUrl)) {
+    if (updateDetected === false && tab.url.includes(EBAY.AUTH_REDIRECT_URL)) {
       updateDetected = true
       if (tab.url.includes('code=')) {
         const code = new URL(tab.url).searchParams.get('code')
@@ -68,16 +70,15 @@ async function getTokenUsingCode(code) {
   const data = new URLSearchParams()
   data.append('grant_type', 'authorization_code')
   data.append('code', code)
-  data.append('redirect_uri', 'hamid_nawaz-hamidnaw-Liebli-koxfrczys')
+  data.append('redirect_uri', EBAY.AUTH_REDIRECT_URI)
 
   const response = await axios.post(
-    'https://api.ebay.com/identity/v1/oauth2/token',
+    `${EBAY.API_BASE_URL}identity/v1/oauth2/token`,
     data.toString(),
     {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization:
-          'Basic aGFtaWRuYXctTGllYmxpbmctUFJELTY2ZTkwYzA2YS03YzY5OTRlMDpQUkQtNmU5MGMwNmFiNmJhLWI1ZmQtNGQzYy04OWE3LTE2M2Y=',
+        Authorization: `Basic ${EBAY.AUTH_CODE}`,
       },
     },
   )
@@ -89,7 +90,7 @@ async function getTokenUsingCode(code) {
 export const getItemData = async (accessToken, itemId) => {
   let config = {
     method: 'get',
-    url: `https://api.ebay.com/buy/browse/v1/item/v1|${itemId}|0?Content-Type=application/json`,
+    url: `${EBAY.API_BASE_URL}buy/browse/v1/item/v1|${itemId}|0?Content-Type=application/json`,
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
