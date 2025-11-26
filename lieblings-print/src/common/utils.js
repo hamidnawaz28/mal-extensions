@@ -40,9 +40,14 @@ const findElementWithText = (selector, text) =>
     (el) => el?.innerText?.toLowerCase() == text?.toLowerCase(),
   )
 
+const findElementWithIncludeText = (selector, text) =>
+  Array.from(document.querySelectorAll(selector)).find((el) =>
+    el?.innerText?.toLowerCase().includes(text?.toLowerCase()),
+  )
+
 const getNodeIndex = (nodeRef) => Array.from(nodeRef.parentNode.children).indexOf(nodeRef)
 
-const removeCm = (value) => value.replace(/\s?(cm|kg)/g, '')
+const sanitizeValues = (value) => value?.replace(/\s?(cm|kg|ml)/g, '')
 
 async function blobToBase64(blob) {
   return new Promise((resolve, _) => {
@@ -56,8 +61,8 @@ async function uploadImage(imageUrl, uploadRef) {
   let imageBlob = null
 
   await runTimeMessage({
-    message: MESSAGING.SET_BLOB_FROM_URL,
-    data: { imageUrl },
+    action: MESSAGING.SET_BLOB_FROM_URL,
+    imageUrl,
   })
   imageBlob = await getBlogStorage()
   await setBlobStorage('')
@@ -66,9 +71,16 @@ async function uploadImage(imageUrl, uploadRef) {
     .then((res) => res.blob())
     .then((blob) => new File([blob], `${+new Date()}.jpg`, { type: 'image/jpg' }))
 
-  const dropEvent = new DragEvent('drop', { bubbles: true, dataTransfer: new DataTransfer() })
-  dropEvent?.dataTransfer?.items.add(image)
-  uploadRef?.dispatchEvent(dropEvent)
+  const dt = new DataTransfer()
+  dt.items.add(image)
+
+  uploadRef.files = dt.files
+
+  // Trigger change for React/Vue frameworks
+  uploadRef.dispatchEvent(new Event('change', { bubbles: true }))
+  // const dropEvent = new DragEvent('drop', { bubbles: true, dataTransfer: new DataTransfer() })
+  // dropEvent?.dataTransfer?.items.add(image)
+  // uploadRef?.dispatchEvent(dropEvent)
 }
 
 async function waitForElement(mainGridSelector, maxRetries = 50, interval = 2000) {
@@ -94,5 +106,6 @@ export {
   waitForElement,
   uploadImage,
   getNodeIndex,
-  removeCm,
+  sanitizeValues,
+  findElementWithIncludeText,
 }

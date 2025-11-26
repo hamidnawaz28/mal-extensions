@@ -2,9 +2,10 @@ import { TEMU_MESSAGES } from '../../common/const'
 import {
   asyncSleep,
   browserRef,
+  findElementWithIncludeText,
   findElementWithText,
   getNodeIndex,
-  removeCm,
+  sanitizeValues,
   uploadImage,
   writeTextToRef,
 } from '../../common/utils'
@@ -120,68 +121,82 @@ const addProductDetails = async (itemData) => {
     itemData.estimatedAvailabilities[0].estimatedAvailableQuantity,
   )
   await addWeight(itemData, variantDetailsRef)
-
   await addDimensions(itemData, variantDetailsRef)
-  const imagesIndex = getNodeIndex(findElementWithText('thead th', 'Images'))
-  await uploadImages(itemData, variantDetailsRef[imagesIndex])
-  const basePriceIndex = getNodeIndex(findElementWithText('thead th', 'Base price'))
-  const basePriceRef = variantDetailsRef[basePriceIndex].querySelector('input')
-  writeTextToRef(basePriceRef, itemData.price.convertedFromValue)
 
+  const basePriceIndex = getNodeIndex(findElementWithIncludeText('thead th', 'Base price'))
+  const basePriceRef = variantDetailsRef[basePriceIndex].querySelector('input')
+
+  await asyncSleep(1000)
+  writeTextToRef(basePriceRef, itemData.price.convertedFromValue)
+  await asyncSleep(1000)
   const recommendedRetailPriceIndex = getNodeIndex(
     findElementWithText('thead th', 'Recommended retail price'),
   )
   const recommendedRetailPriceRef =
     variantDetailsRef[recommendedRetailPriceIndex].querySelector('input')
-  writeTextToRef(recommendedRetailPriceRef, itemData.price.convertedFromValue + 2)
+  recommendedRetailPriceRef.click()
+  await asyncSleep(1000)
+  writeTextToRef(recommendedRetailPriceRef, itemData.price.convertedFromValue)
+  await asyncSleep(1000)
+  const imagesIndex = getNodeIndex(findElementWithText('thead th', 'Images'))
+  await uploadImages(itemData, variantDetailsRef[imagesIndex])
 }
 
 const addWeight = async (itemData, variantDetailsRef) => {
   const packageWeightIndex = getNodeIndex(findElementWithText('thead th', 'Package weight'))
   const packageWeightRef = variantDetailsRef[packageWeightIndex].querySelector('input')
-  const localData = itemData.localizedAspects
-  const getWeightRef = localData.find((aspect) => aspect.name === 'Gewicht')
-  const weightValue = getWeightRef?.value
-  if (weightValue) {
-    const weight = Number(removeCm(weightValue))
-    writeTextToRef(packageWeightRef, weight ? weight * 1000 : DEFAULT_CUP_WEIGHT_GRAMS)
-  }
+  await fillLocalizedData(itemData, 'Gewicht', packageWeightRef, DEFAULT_CUP_WEIGHT_GRAMS, 1000)
 }
 
+const fillLocalizedData = async (itemData, aspectName, elementRef, defaultValue, unit) => {
+  const localData = itemData.localizedAspects
+  const aspectValueRef = localData.find((aspect) => aspect.name === aspectName)
+  elementRef.click()
+  await asyncSleep(300)
+  const aspectValue = aspectValueRef?.value
+
+  const value = Number(sanitizeValues(aspectValue))
+  await asyncSleep(500)
+  writeTextToRef(elementRef, value ? value * unit : defaultValue)
+}
 const addDimensions = async (itemData, variantDetailsRef) => {
   const packageDimensionIndex = getNodeIndex(findElementWithText('thead th', 'Package dimension'))
 
-  variantDetailsRef[packageDimensionIndex]
-    .querySelectorAll('[data-testid="beast-core-grid-col-wrapper"]')
-    .click()
-  const localData = itemData.localizedAspects
+  const dimensionsDialogRef = variantDetailsRef[packageDimensionIndex].querySelector(
+    '[data-testid="beast-core-grid-col-wrapper"]',
+  )
+  dimensionsDialogRef.click()
+  await asyncSleep(2000)
 
   const lengthRef = document.querySelector('input[placeholder="Longest side"]')
-  const getLengthRef = localData.find((aspect) => aspect.name === 'Höhe')
-  if (getLengthRef) writeTextToRef(lengthRef, removeCm(getLengthRef.value))
+  await fillLocalizedData(itemData, 'Länge', lengthRef, 8, 1)
 
   const widthRef = document.querySelector('input[placeholder="Second longest side"]')
-  const getWidthRef = localData.find((aspect) => aspect.name === 'Durchmesser')
-  if (getWidthRef) writeTextToRef(widthRef, removeCm(getWidthRef.value))
+  await fillLocalizedData(itemData, 'Durchmesser', widthRef, 8, 1)
 
   const heightRef = document.querySelector('input[placeholder="Shortest side"]')
-  const getHeightRef = localData.find((aspect) => aspect.name === 'Höhe')
-  if (getHeightRef) writeTextToRef(heightRef, removeCm(getHeightRef.value))
+  await fillLocalizedData(itemData, 'Höhe', heightRef, 10, 1)
+
+  dimensionsDialogRef.click()
+  await asyncSleep(1000)
 }
 
 const uploadImages = async (itemData, imageCellRef) => {
-  let allImages = [itemData.image, ...itemData.additionalImages]
   imageCellRef.querySelector("[class^='imgsPopBtn']").click()
   await asyncSleep(2000)
-  const toAddImagesRef = Array.from(document.querySelectorAll('[data-testid="beast-core-upload"]'))
+  const toAddImagesRef = Array.from(
+    document.querySelectorAll('[data-testid="beast-core-upload"] input'),
+  )
+  let allImages = [itemData.image, ...itemData.additionalImages]
   if (allImages.length > 10) {
     allImages = allImages.slice(0, 10)
   }
   for (let imageIndex = 0; imageIndex < allImages.length; imageIndex++) {
     const imageRef = allImages[imageIndex]
     await uploadImage(imageRef.imageUrl, toAddImagesRef[imageIndex])
-    await asyncSleep(1000)
-    await clickOkButton()
+    await asyncSleep(5000)
+    await clickSaveOnImageButton()
+    await asyncSleep(5000)
   }
   await clickSaveButton()
 }
@@ -249,8 +264,8 @@ const clickCancelButton = async () => {
   await asyncSleep(1000)
 }
 
-const clickOkButton = async () => {
-  const nextBtn = findElementWithText("[role='button'] div", 'Save')
+const clickSaveOnImageButton = async () => {
+  const nextBtn = findElementWithText("[class^='bottomArea'] [role='button']", 'Save')
   nextBtn?.click()
   await asyncSleep(1000)
 }
