@@ -13,12 +13,13 @@ function asyncSleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-function waitTillRefDisappear(refElement, maxTime = 40000, intervalTime = 500) {
+function waitTillRefDisappear(refElement, maxTime = 60000, intervalTime = 500) {
   return new Promise((resolve, reject) => {
     const start = Date.now()
 
     const interval = setInterval(() => {
-      if (!refElement) {
+      const loading = document.querySelector(refElement)
+      if (!loading) {
         clearInterval(interval)
         resolve(true)
       }
@@ -56,8 +57,7 @@ async function blobToBase64(blob) {
     reader.readAsDataURL(blob)
   })
 }
-
-async function uploadImage(imageUrl, uploadRef) {
+const getImage = async (imageUrl) => {
   let imageBlob = null
 
   await runTimeMessage({
@@ -67,20 +67,56 @@ async function uploadImage(imageUrl, uploadRef) {
   imageBlob = await getBlogStorage()
   await setBlobStorage('')
 
-  const image = await fetch(imageBlob)
+  return await fetch(imageBlob)
     .then((res) => res.blob())
     .then((blob) => new File([blob], `${+new Date()}.jpg`, { type: 'image/jpg' }))
+}
 
+async function clickUsingPosition(elementRef) {
+  elementRef.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  await asyncSleep(3000)
+  const rect = elementRef.getBoundingClientRect()
+  const x = rect.left + rect.width / 2
+  const y = rect.top + rect.height / 2
+
+  const el = document.elementFromPoint(x, y)
+  if (!el) return
+
+  el.dispatchEvent(
+    new MouseEvent('mousedown', {
+      bubbles: true,
+      clientX: x,
+      clientY: y,
+    }),
+  )
+
+  el.dispatchEvent(
+    new MouseEvent('mouseup', {
+      bubbles: true,
+      clientX: x,
+      clientY: y,
+    }),
+  )
+
+  el.dispatchEvent(
+    new MouseEvent('click', {
+      bubbles: true,
+      clientX: x,
+      clientY: y,
+    }),
+  )
+}
+
+async function uploadImage(allImages, uploadRef) {
   const dt = new DataTransfer()
-  dt.items.add(image)
-
+  for (let imageIndex = 0; imageIndex < allImages.length; imageIndex++) {
+    const imageRef = allImages[imageIndex]
+    const image = await getImage(imageRef.imageUrl)
+    await asyncSleep(10000)
+    dt.items.add(image)
+  }
   uploadRef.files = dt.files
-
-  // Trigger change for React/Vue frameworks
-  uploadRef.dispatchEvent(new Event('change', { bubbles: true }))
-  // const dropEvent = new DragEvent('drop', { bubbles: true, dataTransfer: new DataTransfer() })
-  // dropEvent?.dataTransfer?.items.add(image)
-  // uploadRef?.dispatchEvent(dropEvent)
+  await uploadRef.dispatchEvent(new Event('change', { bubbles: true }))
 }
 
 async function waitForElement(mainGridSelector, maxRetries = 50, interval = 2000) {
@@ -96,8 +132,37 @@ async function waitForElement(mainGridSelector, maxRetries = 50, interval = 2000
   throw new Error('Element not found: ')
 }
 
+const buttonInstance = (title, id) => {
+  const btn = document.createElement('button')
+  btn.innerText = title
+  btn.id = id
+  btn.style.padding = '10px 16px'
+  btn.style.border = 'none'
+  btn.style.borderRadius = '8px'
+  btn.style.cursor = 'pointer'
+  btn.style.fontSize = '14px'
+  btn.style.fontWeight = '600'
+  btn.style.color = '#fff'
+  btn.style.background = 'linear-gradient(135deg, #FF6A00, #EE0979)'
+  btn.style.boxShadow = '0 4px 10px rgba(0,0,0,0.15)'
+  btn.style.transition = 'all 0.25s ease'
+  btn.style.marginLeft = '10px'
+  btn.style.display = 'inline-block'
+
+  btn.onmouseenter = () => {
+    btn.style.transform = 'scale(1.06)'
+    btn.style.boxShadow = '0 6px 16px rgba(0,0,0,0.25)'
+  }
+
+  btn.onmouseleave = () => {
+    btn.style.transform = 'scale(1)'
+    btn.style.boxShadow = '0 4px 10px rgba(0,0,0,0.15)'
+  }
+  return btn
+}
 export {
   writeTextToRef,
+  clickUsingPosition,
   asyncSleep,
   waitTillRefDisappear,
   findElementWithText,
@@ -108,4 +173,5 @@ export {
   getNodeIndex,
   sanitizeValues,
   findElementWithIncludeText,
+  buttonInstance,
 }

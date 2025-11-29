@@ -10,7 +10,7 @@ import {
   writeTextToRef,
 } from '../../common/utils'
 
-const COLOR_VARIANT = 'Weib'
+const COLOR_VARIANT = 'Weiß'
 const DEFAULT_CUP_WEIGHT_GRAMS = 330
 
 browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
@@ -55,12 +55,24 @@ export const addRemainingDetails = async (itemData) => {
   await clickNextButton()
   await asyncSleep(2000)
   //step 4
-  await selectManufaturarTime()
-  await selectCountryOfOrigin()
   await addProductIdentification(itemData)
-  await clickSubmitButton()
-  await asyncSleep(4000)
-  await clickCancelButton()
+  await selectCountryOfOrigin()
+  await selectManufaturarTime()
+  await asyncSleep(2000)
+  await uncheckOtherMarketplaces()
+  // await clickSubmitButton()
+}
+
+const uncheckOtherMarketplaces = async () => {
+  const marketplaceCheckRef = findElementWithText(
+    '[class^="replicateCheckboxWrapper"]',
+    'Sync to 24 marketplace(s)',
+  )
+  const checked = marketplaceCheckRef.querySelector('label').getAttribute('data-checked')
+  if (checked === 'true') {
+    marketplaceCheckRef.querySelector('input').click()
+    await asyncSleep(1000)
+  }
 }
 
 const selectHandlingTime = async () => {
@@ -82,7 +94,7 @@ const selectManufaturarTime = async () => {
   manufaturarRef.querySelector('input[placeholder="Select"]').click()
   await asyncSleep(2000)
   document.querySelector('ul[role="listbox"] li').click()
-  await asyncSleep(1000)
+  await asyncSleep(1500)
 }
 
 const addProductIdentification = async (itemData) => {
@@ -91,9 +103,13 @@ const addProductIdentification = async (itemData) => {
     '*Product Identification',
   ).parentElement.querySelector('input')
   productIdentificationRef.click()
-  await asyncSleep(1000)
-  writeTextToRef(productIdentificationRef, itemData.itemId)
-  await asyncSleep(1000)
+  await asyncSleep(500)
+  writeTextToRef(productIdentificationRef, itemData.legacyItemId)
+  await asyncSleep(500)
+  productIdentificationRef.dispatchEvent(
+    new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }),
+  )
+  await asyncSleep(500)
 }
 const selectCountryOfOrigin = async () => {
   const countryOfOriginRef = findElementWithText(
@@ -128,6 +144,7 @@ const addProductDetails = async (itemData) => {
 
   await asyncSleep(1000)
   writeTextToRef(basePriceRef, itemData.price.convertedFromValue)
+  basePriceRef.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))
   await asyncSleep(1000)
   const recommendedRetailPriceIndex = getNodeIndex(
     findElementWithText('thead th', 'Recommended retail price'),
@@ -191,11 +208,17 @@ const uploadImages = async (itemData, imageCellRef) => {
   if (allImages.length > 10) {
     allImages = allImages.slice(0, 10)
   }
-  for (let imageIndex = 0; imageIndex < allImages.length; imageIndex++) {
-    const imageRef = allImages[imageIndex]
-    await uploadImage(imageRef.imageUrl, toAddImagesRef[imageIndex])
-    await asyncSleep(5000)
-    await clickSaveOnImageButton()
+  console.log('1------------')
+
+  await uploadImage(allImages, toAddImagesRef[0])
+
+  await asyncSleep(10000)
+  const allAddedImages = Array.from(
+    document.querySelectorAll("[class^='imageList'] [class^='editItem']"),
+  )
+  console.log('2------------')
+  for (let imageIndex = 0; imageIndex < allAddedImages.length; imageIndex++) {
+    await clickSaveOnImageButton(imageIndex === allAddedImages.length - 1)
     await asyncSleep(5000)
   }
   await clickSaveButton()
@@ -264,8 +287,11 @@ const clickCancelButton = async () => {
   await asyncSleep(1000)
 }
 
-const clickSaveOnImageButton = async () => {
-  const nextBtn = findElementWithText("[class^='bottomArea'] [role='button']", 'Save')
+const clickSaveOnImageButton = async (isLast) => {
+  const nextBtn = findElementWithText(
+    "[class^='bottomArea'] [role='button']",
+    isLast ? 'Save' : 'Next',
+  )
   nextBtn?.click()
   await asyncSleep(1000)
 }
