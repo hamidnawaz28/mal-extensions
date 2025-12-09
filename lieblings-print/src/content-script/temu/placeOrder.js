@@ -1,18 +1,43 @@
-const getOrderDetails = async () => {
-  const orderId = '234324'
-  const itemTitle = 'a r'
-  const firstName = 'firstName'
-  const lastName = 'lastName'
-  const address = 'address'
-  const city = 'city'
-  const postCode = 'postcode'
-  const email = 'email'
+const getOrderDetails = () => {
+  const orderId = findElementWithText('span', 'Order ID:')?.parentElement?.querySelector(
+    'span:nth-child(2)',
+  )?.innerText
+
+  const itemTitle = document.querySelector(
+    '[data-testid="beast-core-table-body-tr"] td:nth-child(2) [data-testid="beast-core-ellipsis"]',
+  )?.innerText
+
+  const fullName = findElementWithText('div', 'Recipient name')?.parentElement?.querySelector(
+    'div:nth-child(2)',
+  )?.innerText
+  const parts = fullName?.trim()?.split(/\s+/)
+  const firstName = parts?.[0] || ''
+  const lastName = parts?.slice(1)?.join(' ') || ''
+
+  const addressRef = findElementWithText('div', 'Shipping address')?.parentElement?.querySelector(
+    'div:nth-child(2)',
+  )
+  const address = addressRef?.querySelector(':scope div>div:nth-child(1)')?.innerText
+  const addressDetailRef = addressRef
+    ?.querySelector(':scope div>div:nth-child(2)')
+    ?.innerText?.split(' ')
+    ?.map((el) => el?.replaceAll(/[(),]/g, ''))
+
+  const postCode = addressDetailRef?.[0]
+  const city = addressDetailRef?.[1]
+  const state = addressDetailRef?.[2]
+
+  const email = findElementWithText('div', 'Virtual email')?.parentElement?.querySelector(
+    'div:nth-child(2)',
+  )?.innerText
+
   return {
     orderId,
     itemTitle,
     firstName,
     lastName,
     address,
+    state,
     city,
     postCode,
     email,
@@ -33,7 +58,7 @@ async function addOrderPlaceButton() {
   btn.addEventListener('click', async () => {
     await Browser.runtime.sendMessage({
       action: PLACE_ORDER.INJECT_PLACE_ORDER_SCRIPT,
-      orderData: await getOrderDetails(),
+      orderData: getOrderDetails(),
     })
   })
   findElementWithText('div', 'Order details').appendChild(btn)

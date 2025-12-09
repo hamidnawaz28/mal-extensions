@@ -32,7 +32,7 @@
     },
     {
       "run_at": "document_end",
-      "matches": ["https://seller-eu.temu.com/order-detail.html*"],
+      "matches": ["https://seller.teefico.com/admin/bestellungen*"],
       "js": ["syncTrackingNumber.js"]
     }
   ],
@@ -47,7 +47,7 @@
     },
     {
       "resources": ["syncTemuTrackingNumber.js"],
-      "matches": ["https://seller-eu.temu.com/orders.html/*"]
+      "matches": ["https://seller-eu.temu.com/*"]
     }
   ]
 }

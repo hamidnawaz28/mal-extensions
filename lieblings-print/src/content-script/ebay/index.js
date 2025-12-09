@@ -12,8 +12,8 @@ async function keepAddingButtons() {
   //   action: MESSAGING.OPEN_OAUTH,
   // })
   setInterval(async () => {
-    // const items = document.querySelectorAll('ul li[data-listingid]')
-    const items = document.querySelectorAll('#__next') //FOR HAMID.COM
+    const items = document.querySelectorAll('ul li[data-listingid]')
+    // const items = document.querySelectorAll('#__next') //FOR HAMID.COM
 
     items.forEach((item) => {
       const uploadButton = item.querySelector('#upload-to-temu')

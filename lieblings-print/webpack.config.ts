@@ -11,7 +11,7 @@ const config = {
     placeLieblingsOrder: '/src/content-script/lieblingsflair/placeOrder.js',
     temuPlaceOrder: '/src/content-script/temu/placeOrder.js',
     syncTrackingNumber: '/src/content-script/printy24/SyncTrackingNumber.js',
-    syncTemuTrackingNumberTemu: '/src/content-script/temu/syncTrackingNumber.js',
+    syncTemuTrackingNumber: '/src/content-script/temu/syncTrackingNumber.js',
     background: '/src/background/background.js',
   },
 

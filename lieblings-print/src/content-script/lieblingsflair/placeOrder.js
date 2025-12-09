@@ -17,8 +17,6 @@ browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
 })
 
 export const placeOrder = async (data) => {
-  console.log('---place order----')
-
   await addItems(data)
   await selectStatus()
   await selectMarketplace()
@@ -27,7 +25,7 @@ export const placeOrder = async (data) => {
   await asyncSleep(2000)
   await addOrderNote()
   await asyncSleep(2000)
-  // await clickPlaceOrderButton()
+  await clickPlaceOrderButton()
 }
 
 const addOrderNote = async () => {
@@ -37,6 +35,7 @@ const addOrderNote = async () => {
   document.querySelector('.add_note button.add_note').click()
   await asyncSleep(4000)
 }
+
 const enterFieldData = async (addressRef, selector, value) => {
   const elementRef = addressRef.querySelector(selector)
   writeTextToRef(elementRef, value)
@@ -66,6 +65,7 @@ const addInvoiceAddress = async (data) => {
   await invoiceAddressDetails(addressRef, data)
   await enterFieldData(addressRef, '._billing_email_field input', data.email)
   await selectPaymentMethod(addressRef)
+  await selectBillingState(data?.state)
 }
 
 const addShippingAddress = async (data) => {
@@ -73,6 +73,7 @@ const addShippingAddress = async (data) => {
   await asyncSleep(2000)
   const addressRef = document.querySelectorAll('div.edit_address')[1]
   await shippingAddressDetails(addressRef, data)
+  await selectShippingState(data?.state)
 }
 
 const clickPlaceOrderButton = async (data) => {
@@ -93,6 +94,27 @@ const selectMarketplace = async () => {
   await clickUsingPosition(marketplaceDropdown)
   await asyncSleep(3000)
   const amazonOption = findElementWithText('#select2-metakeyselect-results li', 'amazon_order_id')
+  await clickUsingPosition(amazonOption)
+}
+
+const selectBillingState = async (billingState) => {
+  await asyncSleep(3000)
+
+  const stateDropDown = document.querySelector('#select2-_billing_state-container')
+  await clickUsingPosition(stateDropDown)
+
+  await asyncSleep(3000)
+  const amazonOption = findElementWithText('#select2-_billing_state-results li', billingState)
+  await clickUsingPosition(amazonOption)
+}
+
+const selectShippingState = async (shippingState) => {
+  await asyncSleep(3000)
+
+  const stateDropDown = document.querySelector('#select2-_shipping_state-container')
+  await clickUsingPosition(stateDropDown)
+  await asyncSleep(3000)
+  const amazonOption = findElementWithText('#select2-_shipping_state-results li', shippingState)
   await clickUsingPosition(amazonOption)
 }
 

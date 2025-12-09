@@ -13,13 +13,31 @@ function asyncSleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-function waitTillRefDisappear(refElement, maxTime = 60000, intervalTime = 500) {
+function waitTillRefDisappear(selector, maxTime = 60000, intervalTime = 500) {
   return new Promise((resolve, reject) => {
     const start = Date.now()
 
     const interval = setInterval(() => {
-      const loading = document.querySelector(refElement)
+      const loading = document.querySelector(selector)
       if (!loading) {
+        clearInterval(interval)
+        resolve(true)
+      }
+
+      if (Date.now() - start >= maxTime) {
+        clearInterval(interval)
+        reject()
+      }
+    }, intervalTime)
+  })
+}
+function waitTillRefAppears(selector, text, maxTime = 60000, intervalTime = 500) {
+  return new Promise((resolve, reject) => {
+    const start = Date.now()
+
+    const interval = setInterval(() => {
+      const loading = findElementWithIncludeText(selector, text)
+      if (loading) {
         clearInterval(interval)
         resolve(true)
       }
@@ -136,11 +154,13 @@ const buttonInstance = (title, id) => {
   const btn = document.createElement('button')
   btn.innerText = title
   btn.id = id
-  btn.style.padding = '10px 16px'
+  btn.style.padding = '4px 8px'
   btn.style.border = 'none'
-  btn.style.borderRadius = '8px'
+  btn.style.marginLeft = '8px'
+  btn.style.marginRight = '8px'
+  btn.style.borderRadius = '4px'
   btn.style.cursor = 'pointer'
-  btn.style.fontSize = '14px'
+  btn.style.fontSize = '12px'
   btn.style.fontWeight = '600'
   btn.style.color = '#fff'
   btn.style.background = 'linear-gradient(135deg, #FF6A00, #EE0979)'
@@ -161,6 +181,7 @@ const buttonInstance = (title, id) => {
   return btn
 }
 export {
+  waitTillRefAppears,
   writeTextToRef,
   clickUsingPosition,
   asyncSleep,
