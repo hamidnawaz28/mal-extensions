@@ -150,6 +150,19 @@ async function waitForElement(mainGridSelector, maxRetries = 50, interval = 2000
   throw new Error('Element not found: ')
 }
 
+const waitForCondition = async (conditionFunction, maxRetries = 200, interval = 1000) => {
+  let retries = 0
+  let condtionFullFilled = false
+
+  while (condtionFullFilled === false && retries < maxRetries) {
+    condtionFullFilled = await conditionFunction()
+    retries++
+    if (condtionFullFilled) return
+    await new Promise((res) => setTimeout(res, interval))
+  }
+  throw new Error('Element not found: ')
+}
+
 const buttonInstance = (title, id) => {
   const btn = document.createElement('button')
   btn.innerText = title
@@ -181,6 +194,7 @@ const buttonInstance = (title, id) => {
   return btn
 }
 export {
+  waitForCondition,
   waitTillRefAppears,
   writeTextToRef,
   clickUsingPosition,

@@ -1,12 +1,11 @@
 const MESSAGING = {
   SET_BLOB_FROM_URL: 'SET_BLOB_FROM_URL',
-  OPEN_OAUTH: 'OPEN_OAUTH',
   WAIT_TILL_ACTIVE_TAB_LOADS: 'WAIT_TILL_ACTIVE_TAB_LOADS',
   GET_EBAY_ITEM_DATA: 'GET_EBAY_ITEM_DATA',
   UPDATE_ACTIVE_TAB_URL: 'UPDATE_ACTIVE_TAB_URL',
 }
 
-const TEMU_MESSAGES = {
+const ADD_PRODUCT = {
   INJECT_ADD_PRODUCT_SCRIPT: 'INJECT_ADD_PRODUCT_SCRIPT',
   ENTER_INITIAL_DETAILS: 'ENTER_INITIAL_DETAILS',
   CLICK_ON_NEXT_BUTTON: 'CLICK_ON_NEXT_BUTTON',
@@ -56,7 +55,7 @@ const EBAY = {
     'https://api.ebay.com/oauth/api_scope/commerce.message',
     'https://api.ebay.com/oauth/api_scope/commerce.feedback',
     'https://api.ebay.com/oauth/api_scope/commerce.shipping',
-  ],
+  ].join('%20'),
 }
 
-export { SYNC_TRACKING_NUMBER, MESSAGING, EBAY, TEMU_MESSAGES, PLACE_ORDER }
+export { SYNC_TRACKING_NUMBER, MESSAGING, EBAY, ADD_PRODUCT, PLACE_ORDER }

@@ -45,6 +45,7 @@ async function sendTabMesageWithId(tabId, data) {
 async function runTimeMessage(data) {
   return await browserRef.runtime.sendMessage(data)
 }
+const getTabData = async (tabId) => await browserRef.tabs.get(tabId)
 
 async function reloadATab(tabId) {
   await browserRef.tabs.reload(tabId)
@@ -154,6 +155,7 @@ export {
   updateLocalStorage,
   reloadATab,
   createATab,
+  getTabData,
   updateATabUrl,
   activeTabData,
   textOnAppIcon,

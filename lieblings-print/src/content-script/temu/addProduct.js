@@ -1,4 +1,4 @@
-import { TEMU_MESSAGES } from '../../common/const'
+import { ADD_PRODUCT } from '../../common/const'
 import {
   asyncSleep,
   browserRef,
@@ -14,16 +14,16 @@ const COLOR_VARIANT = 'Weiß'
 const DEFAULT_CUP_WEIGHT_GRAMS = 330
 
 browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
-  if (msg.action === TEMU_MESSAGES.ENTER_INITIAL_DETAILS) {
+  if (msg.action === ADD_PRODUCT.ENTER_INITIAL_DETAILS) {
     await addInitialDetails(msg.itemData)
     sendResponse({})
   }
-  if (msg.action === TEMU_MESSAGES.CLICK_ON_NEXT_BUTTON) {
+  if (msg.action === ADD_PRODUCT.CLICK_ON_NEXT_BUTTON) {
     await clickNextButton()
     await asyncSleep(10000)
     sendResponse({})
   }
-  if (msg.action === TEMU_MESSAGES.ENTER_REMAINING_DETAILS) {
+  if (msg.action === ADD_PRODUCT.ENTER_REMAINING_DETAILS) {
     await addRemainingDetails(msg.itemData)
     sendResponse({})
   }
@@ -204,11 +204,10 @@ const uploadImages = async (itemData, imageCellRef) => {
   const toAddImagesRef = Array.from(
     document.querySelectorAll('[data-testid="beast-core-upload"] input'),
   )
-  let allImages = [itemData.image, ...itemData.additionalImages]
+  let allImages = [itemData?.image, ...(itemData?.additionalImages || [])].filter(Boolean)
   if (allImages.length > 10) {
     allImages = allImages.slice(0, 10)
   }
-  console.log('1------------')
 
   await uploadImage(allImages, toAddImagesRef[0])
 
@@ -216,7 +215,6 @@ const uploadImages = async (itemData, imageCellRef) => {
   const allAddedImages = Array.from(
     document.querySelectorAll("[class^='imageList'] [class^='editItem']"),
   )
-  console.log('2------------')
   for (let imageIndex = 0; imageIndex < allAddedImages.length; imageIndex++) {
     await clickSaveOnImageButton(imageIndex === allAddedImages.length - 1)
     await asyncSleep(5000)
@@ -271,6 +269,7 @@ const addProductDescription = async (itemData) => {
   writeTextToRef(descriptionRef, itemData.shortDescription)
   await asyncSleep(500)
 }
+
 const clickNextButton = async () => {
   const nextBtn = findElementWithText("[role='button'] div", 'Next')
   nextBtn?.click()

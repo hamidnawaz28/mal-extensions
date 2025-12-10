@@ -18,12 +18,12 @@
     {
       "run_at": "document_end",
       "matches": ["https://www.ebay.de/sch/*"],
-      "js": ["ebay.js"]
+      "js": ["addProductEbay.js"]
     },
     {
       "run_at": "document_end",
       "matches": ["https://www.hamidnawaz.com/*"],
-      "js": ["ebay.js"]
+      "js": ["addProductEbay.js"]
     },
     {
       "run_at": "document_end",
@@ -38,7 +38,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["addTemuProduct.js"],
+      "resources": ["addProductTemu.js"],
       "matches": ["https://seller-eu.temu.com/*"]
     },
     {

@@ -1,11 +1,17 @@
 import axios from 'axios'
 
-import { closeWindowIfExists, setLocalStorage } from '../common/browserMethods'
+import {
+  closeWindowIfExists,
+  getLocalStorage,
+  getTabData,
+  setLocalStorage,
+  waitTillTabLoads,
+} from '../common/browserMethods'
 import { EBAY } from '../common/const'
-import { browserRef } from '../common/utils'
+import { browserRef, waitForCondition } from '../common/utils'
 
 export const runLoginFlow = async () => {
-  const scopeString = EBAY.SCOPES.join('%20')
+  const scopeString = EBAY.SCOPES
   let config = {
     method: 'get',
     url: `${EBAY.AUTH_BASE_URL}oauth2/authorize?client_id=${EBAY.CLIENT_ID}&response_type=code&redirect_uri=${EBAY.REDIRECT_URI}&scope=${scopeString}`,
@@ -19,57 +25,41 @@ export const runLoginFlow = async () => {
   })
 
   const windowId = windowTab.id
-  const tabId = windowTab.tabs[0].id
-  attachTabListeners(tabId, windowId)
-  attachWindowListeners(windowId)
+  const tab = windowTab.tabs[0]
+  await waitTillTabLoads(tab.id)
+  await waitForCondition(async function () {
+    const tabData = await getTabData(tab.id)
+    return tabData.url.includes(EBAY.AUTH_REDIRECT_URL) && tabData.url.includes('code=')
+  })
+  return await getPermissionCode(tab.id, windowId)
 }
 
-function attachTabListeners(tabId, windowId) {
-  let updateDetected = false
+const getPermissionCode = async (tabId, windowId) => {
+  const tabData = await getTabData(tabId)
+  const code = new URL(tabData.url).searchParams.get('code')
+  const tokenData = await extractAuthData(code)
+  await closeWindowIfExists(windowId)
+  await updateAuthStorage(tokenData)
+  return tokenData.access_token
+}
 
-  browserRef.tabs.onUpdated.addListener(async (updatedTabId, changeInfo, tab) => {
-    if (updatedTabId !== tabId) return
-    if (updateDetected === false && tab.url.includes(EBAY.AUTH_REDIRECT_URL)) {
-      updateDetected = true
-      if (tab.url.includes('code=')) {
-        const code = new URL(tab.url).searchParams.get('code')
-        await closeWindowIfExists(windowId)
-        const tokenData = await getTokenUsingCode(code)
-        const { access_token, expires_in, refresh_token, refresh_token_expires_in, token_type } =
-          tokenData
-
-        await setLocalStorage({
-          authenticated: true,
-          access_token,
-          expires_in,
-          refresh_token,
-          refresh_token_expires_in,
-          token_type,
-        })
-        console.log('Access Token:', access_token)
-      }
-    }
-  })
-
-  browserRef.tabs.onRemoved.addListener((removedTabId) => {
-    if (removedTabId === tabId) {
-      console.log('Popup TAB closed by user')
-    }
+const updateAuthStorage = async (tokenData) => {
+  const { access_token, expires_in, refresh_token, refresh_token_expires_in, token_type } =
+    tokenData
+  await setLocalStorage({
+    isAuthenticated: true,
+    accessToken: access_token,
+    expiresIn: expires_in,
+    refreshToken: refresh_token,
+    refreshTokenExpiresIn: refresh_token_expires_in,
+    tokenType: token_type,
   })
 }
 
-function attachWindowListeners(windowId) {
-  browserRef.windows.onRemoved.addListener((removedWindowId) => {
-    if (removedWindowId === windowId) {
-      console.log('Popup WINDOW closed by user')
-    }
-  })
-}
-
-async function getTokenUsingCode(code) {
+async function extractAuthData(permissionCode) {
   const data = new URLSearchParams()
   data.append('grant_type', 'authorization_code')
-  data.append('code', code)
+  data.append('code', permissionCode)
   data.append('redirect_uri', EBAY.AUTH_REDIRECT_URI)
 
   const response = await axios.post(
@@ -87,7 +77,52 @@ async function getTokenUsingCode(code) {
   return response.data
 }
 
-export const getItemData = async (accessToken, itemId) => {
+async function getAccessToken() {
+  const ls = await getLocalStorage()
+  const userLoggedInPast = !!ls?.isAuthenticated && !!ls?.accessToken && !!ls?.refreshToken
+  if (userLoggedInPast) {
+    const res = await fetch('https://apiz.ebay.com/commerce/identity/v1/user/', {
+      headers: { Authorization: `Bearer ${ls?.accessToken}` },
+    })
+    if (res.status == 401) {
+      return await refreshAccessToken(ls?.refreshToken)
+    } else {
+      return ls?.accessToken
+    }
+  } else {
+    return await runLoginFlow()
+  }
+}
+
+async function refreshAccessToken(refreshToken) {
+  const body = new URLSearchParams({
+    grant_type: 'refresh_token',
+    refresh_token: refreshToken,
+    scope: EBAY.SCOPES,
+  })
+
+  const res = await fetch('https://api.ebay.com/identity/v1/oauth2/token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Authorization: 'Basic ' + EBAY.AUTH_CODE,
+    },
+    body,
+  })
+
+  if (!res.ok) {
+    return await runLoginFlow()
+  }
+
+  const data = await res.json()
+  await updateAuthStorage(data)
+  console.log('Access token refreshed---', data.access_token)
+  return data.access_token
+}
+
+export const getItemData = async (itemId) => {
+  let accessToken = await getAccessToken()
+
   let config = {
     method: 'get',
     url: `${EBAY.API_BASE_URL}buy/browse/v1/item/v1|${itemId}|0?Content-Type=application/json`,
@@ -97,5 +132,5 @@ export const getItemData = async (accessToken, itemId) => {
   }
 
   const response = await axios.request(config)
-  return response
+  return response.data
 }

@@ -6,8 +6,8 @@ import ZipPlugin from 'zip-webpack-plugin'
 const config = {
   entry: {
     popup: '/src/popup/index.tsx',
-    ebay: '/src/content-script/ebay/index.js',
-    addTemuProduct: '/src/content-script/temu/addProduct.js',
+    addProductEbay: '/src/content-script/ebay/addProduct.js',
+    addProductTemu: '/src/content-script/temu/addProduct.js',
     placeLieblingsOrder: '/src/content-script/lieblingsflair/placeOrder.js',
     temuPlaceOrder: '/src/content-script/temu/placeOrder.js',
     syncTrackingNumber: '/src/content-script/printy24/SyncTrackingNumber.js',
