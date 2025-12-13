@@ -60,7 +60,8 @@ export const addRemainingDetails = async (itemData) => {
   await selectManufaturarTime()
   await asyncSleep(2000)
   await uncheckOtherMarketplaces()
-  // await clickSubmitButton()
+  await clickSubmitButton()
+  await asyncSleep(5000)
 }
 
 const uncheckOtherMarketplaces = async () => {
@@ -113,11 +114,12 @@ const addProductIdentification = async (itemData) => {
 }
 const selectCountryOfOrigin = async () => {
   const countryOfOriginRef = findElementWithText(
-    '[class^="fieldLabel"]',
-    'Country/Region of Origin',
-  ).parentElement.querySelector('input')
+    '[data-testid="beast-core-grid-col-wrapper"]',
+    '*Country/Region of Origin',
+  ).parentElement.parentElement.querySelector('[data-testid="beast-core-select-htmlInput"]')
+
   countryOfOriginRef.click()
-  await asyncSleep(1000)
+  await asyncSleep(2000)
   findElementWithText('[class^="countryTag"]', 'Germany').click()
   await asyncSleep(1000)
 }

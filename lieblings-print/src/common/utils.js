@@ -163,24 +163,27 @@ const waitForCondition = async (conditionFunction, maxRetries = 200, interval = 
   throw new Error('Element not found: ')
 }
 
-const buttonInstance = (title, id) => {
+const buttonInstance = (title, id, style = {}) => {
   const btn = document.createElement('button')
   btn.innerText = title
   btn.id = id
-  btn.style.padding = '4px 8px'
-  btn.style.border = 'none'
-  btn.style.marginLeft = '8px'
-  btn.style.marginRight = '8px'
-  btn.style.borderRadius = '4px'
-  btn.style.cursor = 'pointer'
-  btn.style.fontSize = '12px'
-  btn.style.fontWeight = '600'
-  btn.style.color = '#fff'
-  btn.style.background = 'linear-gradient(135deg, #FF6A00, #EE0979)'
-  btn.style.boxShadow = '0 4px 10px rgba(0,0,0,0.15)'
-  btn.style.transition = 'all 0.25s ease'
-  btn.style.marginLeft = '10px'
-  btn.style.display = 'inline-block'
+  const btnStyle = {
+    padding: '4px 8px',
+    border: 'none',
+    margin: '8px',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontSize: '12px',
+    fontWeight: '600',
+    color: '#fff',
+    background: 'linear-gradient(135deg, #FF6A00, #EE0979)',
+    boxShadow: '0 4px 10px rgba(0,0,0,0.15)',
+    transition: 'all 0.25s ease',
+    display: 'inline-block',
+    width: 'max-content',
+    ...style,
+  }
+  Object.assign(btn.style, btnStyle)
 
   btn.onmouseenter = () => {
     btn.style.transform = 'scale(1.06)'
@@ -193,7 +196,63 @@ const buttonInstance = (title, id) => {
   }
   return btn
 }
+
+const checkboxInstance = (labelText, className, style = {}) => {
+  const wrapper = document.createElement('label')
+  wrapper.style.display = 'inline-flex'
+  wrapper.style.alignItems = 'center'
+  wrapper.style.cursor = 'pointer'
+  wrapper.style.margin = '8px'
+
+  const checkbox = document.createElement('input')
+  checkbox.type = 'checkbox'
+  checkbox.className = className
+
+  const checkboxStyle = {
+    appearance: 'none',
+    width: '18px',
+    height: '18px',
+    borderRadius: '4px',
+    border: '2px solid #FF6A00',
+    marginRight: '8px',
+    cursor: 'pointer',
+    transition: 'all 0.25s ease',
+    background: '#fff',
+    boxShadow: '0 4px 10px rgba(0,0,0,0.15)',
+    ...style,
+  }
+
+  Object.assign(checkbox.style, checkboxStyle)
+
+  checkbox.addEventListener('change', () => {
+    if (checkbox.checked) {
+      checkbox.style.background = 'linear-gradient(135deg, #FF6A00, #EE0979)'
+      checkbox.style.borderColor = 'transparent'
+      checkbox.style.transform = 'scale(1.05)'
+      checkbox.style.boxShadow = '0 6px 16px rgba(0,0,0,0.25)'
+    } else {
+      checkbox.style.background = '#fff'
+      checkbox.style.borderColor = '#FF6A00'
+      checkbox.style.transform = 'scale(1)'
+      checkbox.style.boxShadow = '0 4px 10px rgba(0,0,0,0.15)'
+    }
+  })
+
+  const label = document.createElement('span')
+  label.innerText = labelText
+  label.style.fontSize = '12px'
+  label.style.fontWeight = '600'
+  label.style.cursor = 'pointer'
+  label.style.color = '#333'
+
+  wrapper.appendChild(checkbox)
+  wrapper.appendChild(label)
+
+  return wrapper
+}
+
 export {
+  checkboxInstance,
   waitForCondition,
   waitTillRefAppears,
   writeTextToRef,

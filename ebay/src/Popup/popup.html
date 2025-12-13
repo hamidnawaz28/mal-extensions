@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mactrac</title>
+    <style>
+      #root {
+        width: 500px;
+      }
+
+      .main-continer {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        grid-gap: 10px;
+      }
+
+      .app-logo {
+        padding: 20px;
+      }
+
+      .ad-info {
+        display: grid;
+        grid-template-columns: 30% 65%;
+        grid-gap: 10px;
+      }
+
+      .ad-info > img {
+        width: 100%;
+        object-fit: cover;
+        height: 100px;
+      }
+
+      .ad-container {
+        display: flex;
+        flex-direction: column;
+        grid-gap: 20px;
+      }
+
+      .ad-item {
+        display: flex;
+        flex-direction: column;
+        grid-gap: 15px;
+        padding: 10px;
+        border-radius: 5px;
+        background-color: #fafafa;
+        box-shadow: rgb(150 150 150 / 20%) 0px 7px 29px 0px;
+      }
+
+      .ad-item:hover {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script src="popup.js"></script>
+  </body>
+</html>

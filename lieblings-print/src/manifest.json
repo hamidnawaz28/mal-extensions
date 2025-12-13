@@ -22,11 +22,6 @@
     },
     {
       "run_at": "document_end",
-      "matches": ["https://www.hamidnawaz.com/*"],
-      "js": ["addProductEbay.js"]
-    },
-    {
-      "run_at": "document_end",
       "matches": ["https://seller-eu.temu.com/order-detail.html*"],
       "js": ["temuPlaceOrder.js"]
     },
