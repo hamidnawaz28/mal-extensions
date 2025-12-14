@@ -121,14 +121,6 @@ const updateProcessingStatus = async (isProcessing) => {
   const newStorage = { ...localStorage, isProcessing: isProcessing }
   await setLocalStorage(newStorage)
 }
-async function setBlobStorage(imageBlob) {
-  await localRef.set({ imageBlob: imageBlob })
-}
-
-async function getBlobStorage() {
-  const data = await localRef.get()
-  return data['imageBlob']
-}
 
 async function closeWindowIfExists(windowId) {
   try {
@@ -164,6 +156,4 @@ export {
   waitTillActiveTabLoads,
   updateAdData,
   updateProcessingStatus,
-  setBlobStorage,
-  getBlobStorage,
 }

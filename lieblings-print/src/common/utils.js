@@ -1,6 +1,4 @@
 import Browser from 'webextension-polyfill'
-import { getBlobStorage, runTimeMessage, setBlobStorage } from './browserMethods'
-import { MESSAGING } from './const'
 
 export const browserRef = Browser
 
@@ -49,10 +47,6 @@ function waitTillRefAppears(selector, text, maxTime = 60000, intervalTime = 500)
     }, intervalTime)
   })
 }
-const getBlobFromImgUrl = async (imageUrl) => {
-  const resp = await fetch(imageUrl, { mode: 'no-cors' }).then((response) => response.blob())
-  return await blobToBase64(resp)
-}
 
 const findElementWithText = (selector, text) =>
   Array.from(document.querySelectorAll(selector)).find(
@@ -68,26 +62,11 @@ const getNodeIndex = (nodeRef) => Array.from(nodeRef.parentNode.children).indexO
 
 const sanitizeValues = (value) => value?.replace(/\s?(cm|kg|ml)/g, '')
 
-async function blobToBase64(blob) {
-  return new Promise((resolve, _) => {
-    const reader = new FileReader()
-    reader.onloadend = () => resolve(reader.result)
-    reader.readAsDataURL(blob)
-  })
-}
-const getImage = async (imageUrl) => {
-  console.log('image url----------', imageUrl)
+async function urlToFile(imageUrl) {
+  const res = await fetch(imageUrl)
+  const blob = await res.blob()
 
-  await runTimeMessage({
-    action: MESSAGING.SET_BLOB_FROM_URL,
-    imageUrl,
-  })
-  let imageBlob = await getBlobStorage()
-  await setBlobStorage('')
-
-  return await fetch(imageBlob)
-    .then((res) => res.blob())
-    .then((blob) => new File([blob], `${+new Date()}.jpg`, { type: 'image/jpg' }))
+  return new File([blob], `${Date.now()}.jpg`, { type: blob.type || 'image/jpeg' })
 }
 
 async function clickUsingPosition(elementRef) {
@@ -125,12 +104,11 @@ async function clickUsingPosition(elementRef) {
   )
 }
 
-async function uploadImage(allImages, uploadRef) {
+async function uploadImages(allImages, uploadRef) {
   const dt = new DataTransfer()
   for (let imageIndex = 0; imageIndex < allImages.length; imageIndex++) {
     const imageRef = allImages[imageIndex]
-    const image = await getImage(imageRef.imageUrl)
-    await asyncSleep(10000)
+    const image = await urlToFile(imageRef.imageUrl)
     dt.items.add(image)
   }
   uploadRef.files = dt.files
@@ -260,12 +238,11 @@ export {
   asyncSleep,
   waitTillRefDisappear,
   findElementWithText,
-  getBlobFromImgUrl,
-  blobToBase64,
   waitForElement,
-  uploadImage,
+  uploadImages,
   getNodeIndex,
   sanitizeValues,
   findElementWithIncludeText,
   buttonInstance,
+  urlToFile,
 }

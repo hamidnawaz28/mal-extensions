@@ -1,12 +1,11 @@
 import {
-  setBlobStorage,
   setLocalStorage,
   updateActiveTabUrl,
   waitTillActiveTabLoads,
   waitTillTabLoads,
 } from '../common/browserMethods'
 import { ADD_PRODUCT, MESSAGING, PLACE_ORDER, SYNC_TRACKING_NUMBER } from '../common/const'
-import { asyncSleep, browserRef, getBlobFromImgUrl } from '../common/utils'
+import { asyncSleep, browserRef } from '../common/utils'
 import { getItemData } from './requests'
 
 browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
@@ -39,18 +38,6 @@ browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
     sendResponse({})
     return true
   }
-})
-browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
-  if (msg.action === MESSAGING.SET_BLOB_FROM_URL) {
-    const imageUrl = msg.imageUrl
-    console.log('imageUrl------------', imageUrl)
-
-    const base64 = await getBlobFromImgUrl(imageUrl)
-    await asyncSleep(5000)
-    await setBlobStorage(base64)
-    sendResponse({})
-  }
-  return true
 })
 
 browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {

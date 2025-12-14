@@ -6,7 +6,6 @@ import {
   findElementWithText,
   getNodeIndex,
   sanitizeValues,
-  uploadImage,
   writeTextToRef,
 } from '../../common/utils'
 
@@ -213,9 +212,8 @@ const uploadImages = async (itemData, imageCellRef) => {
     allImages = allImages.slice(0, 10)
   }
 
-  await uploadImage(allImages, toAddImagesRef[0])
+  await uploadImages(allImages, toAddImagesRef[0])
 
-  await asyncSleep(10000)
   const allAddedImages = Array.from(
     document.querySelectorAll("[class^='imageList'] [class^='editItem']"),
   )
