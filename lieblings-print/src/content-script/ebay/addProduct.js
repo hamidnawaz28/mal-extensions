@@ -53,9 +53,12 @@ async function keepAddingButtons() {
         const items = Array.from(document.querySelectorAll('ul li[data-listingid]'))
         const itemsList = items
           .filter((item) => item.querySelector('.select-checkbox')?.checked)
-          .map((item) =>
-            item.querySelector('.select-checkbox').parentElement.getAttribute('itemid'),
-          )
+          .map((item) => {
+            return {
+              itemId: item.querySelector('.select-checkbox').parentElement.getAttribute('itemid'),
+              title: item.querySelector('.su-styled-text.primary.default').innerText,
+            }
+          })
         if (itemsList.length == 0) {
           alert('Select an item to upload')
           return

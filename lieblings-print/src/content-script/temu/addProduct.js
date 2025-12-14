@@ -15,7 +15,7 @@ const DEFAULT_CUP_WEIGHT_GRAMS = 330
 
 browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
   if (msg.action === ADD_PRODUCT.ENTER_INITIAL_DETAILS) {
-    await addInitialDetails(msg.itemData)
+    await addInitialDetails(msg.itemData, msg.title)
     sendResponse({})
   }
   if (msg.action === ADD_PRODUCT.CLICK_ON_NEXT_BUTTON) {
@@ -30,9 +30,9 @@ browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
   return true
 })
 
-const addInitialDetails = async (itemData) => {
+const addInitialDetails = async (itemData, title) => {
   await asyncSleep(2000)
-  await writeTitle(itemData)
+  await writeTitle(title)
   await selectCategory()
 }
 
@@ -60,7 +60,7 @@ export const addRemainingDetails = async (itemData) => {
   await selectManufaturarTime()
   await asyncSleep(2000)
   await uncheckOtherMarketplaces()
-  await clickSubmitButton()
+  // await clickSubmitButton()
   await asyncSleep(5000)
 }
 
@@ -147,7 +147,7 @@ const addProductDetails = async (itemData) => {
   const basePriceRef = variantDetailsRef[basePriceIndex].querySelector('input')
 
   await asyncSleep(1000)
-  writeTextToRef(basePriceRef, '12,95')
+  writeTextToRef(basePriceRef, '12.95')
   basePriceRef.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))
   await asyncSleep(1000)
   const recommendedRetailPriceIndex = getNodeIndex(
@@ -157,7 +157,7 @@ const addProductDetails = async (itemData) => {
     variantDetailsRef[recommendedRetailPriceIndex].querySelector('input')
   recommendedRetailPriceRef.click()
   await asyncSleep(1000)
-  writeTextToRef(recommendedRetailPriceRef, '12,95')
+  writeTextToRef(recommendedRetailPriceRef, '12.95')
   await asyncSleep(1000)
   const imagesIndex = getNodeIndex(findElementWithText('thead th', 'Bilder'))
   await uploadImages(itemData, variantDetailsRef[imagesIndex])
@@ -250,11 +250,11 @@ const selectMaterial = async () => {
   findElementWithText('ul li div', 'Keramik').click()
   await asyncSleep(1000)
 }
-const writeTitle = async (itemData) => {
+const writeTitle = async (title) => {
   const productTitleRef = document.querySelector(
     "[placeholder='Bitte geben Sie einen Produktnamen ein']",
   )
-  writeTextToRef(productTitleRef, itemData.title)
+  writeTextToRef(productTitleRef, title)
   await asyncSleep(1000)
 }
 const clickOnBrandButton = async () => {
