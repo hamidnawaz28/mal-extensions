@@ -22,7 +22,7 @@ const syncTrackingNumber = async (trackingData) => {
     const trackingNumber = trackingData[trackingDataIndex].trackingNumber
 
     const searchOrderRef = document.querySelector(
-      '[placeholder="Search up to 100 IDs at a time, separated by commas."]',
+      '[placeholder="Suche bis zu 100 IDs gleichzeitig, getrennt durch Kommas."]',
     )
     searchOrderRef.value = ''
     await asyncSleep(1000)
@@ -34,7 +34,7 @@ const syncTrackingNumber = async (trackingData) => {
     await asyncSleep(4000)
     const orders = findElementWithText(
       "div[role='button']",
-      'go back to order list',
+      'Zurück zur Bestellliste',
     )?.parentElement?.parentElement?.querySelector('div:nth-child(2)')?.innerText
 
     if (orders?.toLowerCase() == '0 orders') {

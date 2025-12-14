@@ -10,7 +10,7 @@ const config = {
     addProductTemu: '/src/content-script/temu/addProduct.js',
     placeLieblingsOrder: '/src/content-script/lieblingsflair/placeOrder.js',
     temuPlaceOrder: '/src/content-script/temu/placeOrder.js',
-    syncTrackingNumber: '/src/content-script/printy24/SyncTrackingNumber.js',
+    syncTrackingNumber: '/src/content-script/teefico/SyncTrackingNumber.js',
     syncTemuTrackingNumber: '/src/content-script/temu/syncTrackingNumber.js',
     background: '/src/background/background.js',
   },

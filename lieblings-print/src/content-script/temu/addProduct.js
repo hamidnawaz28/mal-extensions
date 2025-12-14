@@ -65,9 +65,9 @@ export const addRemainingDetails = async (itemData) => {
 }
 
 const uncheckOtherMarketplaces = async () => {
-  const marketplaceCheckRef = findElementWithText(
+  const marketplaceCheckRef = findElementWithIncludeText(
     '[class^="replicateCheckboxWrapper"]',
-    'Sync to 24 marketplace(s)',
+    'Marktplatz/-plätzen synchronisieren',
   )
   const checked = marketplaceCheckRef.querySelector('label').getAttribute('data-checked')
   if (checked === 'true') {
@@ -79,7 +79,7 @@ const uncheckOtherMarketplaces = async () => {
 const selectHandlingTime = async () => {
   const handlingTimeRef = findElementWithText(
     '[data-testid="beast-core-grid-col-wrapper"]',
-    '*Handling time',
+    '*Bearbeitungszeit',
   ).parentElement
   handlingTimeRef.querySelector('input').click()
   await asyncSleep(1000)
@@ -90,9 +90,9 @@ const selectHandlingTime = async () => {
 const selectManufaturarTime = async () => {
   const manufaturarRef = findElementWithText(
     '[data-testid="beast-core-grid-col-wrapper"]',
-    '*Manufacturer',
+    '*Hersteller',
   ).parentElement
-  manufaturarRef.querySelector('input[placeholder="Select"]').click()
+  manufaturarRef.querySelector('input[placeholder="Auswählen"]').click()
   await asyncSleep(2000)
   document.querySelector('ul[role="listbox"] li').click()
   await asyncSleep(1500)
@@ -101,7 +101,7 @@ const selectManufaturarTime = async () => {
 const addProductIdentification = async (itemData) => {
   const productIdentificationRef = findElementWithText(
     '[data-testid="beast-core-grid-col-wrapper"]',
-    '*Product Identification',
+    '*Produktidentifikation',
   ).parentElement.querySelector('input')
   productIdentificationRef.click()
   await asyncSleep(500)
@@ -115,7 +115,7 @@ const addProductIdentification = async (itemData) => {
 const selectCountryOfOrigin = async () => {
   const countryOfOriginRef = findElementWithText(
     '[data-testid="beast-core-grid-col-wrapper"]',
-    '*Country/Region of Origin',
+    '*Ursprungsland/-region',
   ).parentElement.parentElement.querySelector('[data-testid="beast-core-select-htmlInput"]')
 
   countryOfOriginRef.click()
@@ -130,7 +130,7 @@ const addProductDetails = async (itemData) => {
   ).parentElement.querySelectorAll('td')
 
   const sellerFullfillmentQuatityIndex = getNodeIndex(
-    findElementWithText('thead th', 'Seller fulfillment quantity'),
+    findElementWithText('thead th', 'Verkäufer-Auftragserfüllungsmenge'),
   )
   const sellerFullfillmentQuatityRef =
     variantDetailsRef[sellerFullfillmentQuatityIndex].querySelector('input')
@@ -141,28 +141,30 @@ const addProductDetails = async (itemData) => {
   await addWeight(itemData, variantDetailsRef)
   await addDimensions(itemData, variantDetailsRef)
 
-  const basePriceIndex = getNodeIndex(findElementWithIncludeText('thead th', 'Base price'))
+  const basePriceIndex = getNodeIndex(
+    findElementWithIncludeText('thead th', 'Basispreis direkt festlegen'),
+  )
   const basePriceRef = variantDetailsRef[basePriceIndex].querySelector('input')
 
   await asyncSleep(1000)
-  writeTextToRef(basePriceRef, itemData.price.convertedFromValue)
+  writeTextToRef(basePriceRef, '12,95')
   basePriceRef.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))
   await asyncSleep(1000)
   const recommendedRetailPriceIndex = getNodeIndex(
-    findElementWithText('thead th', 'Recommended retail price'),
+    findElementWithText('thead th', 'Unverbindliche Preisempfehlung'),
   )
   const recommendedRetailPriceRef =
     variantDetailsRef[recommendedRetailPriceIndex].querySelector('input')
   recommendedRetailPriceRef.click()
   await asyncSleep(1000)
-  writeTextToRef(recommendedRetailPriceRef, itemData.price.convertedFromValue)
+  writeTextToRef(recommendedRetailPriceRef, '12,95')
   await asyncSleep(1000)
-  const imagesIndex = getNodeIndex(findElementWithText('thead th', 'Images'))
+  const imagesIndex = getNodeIndex(findElementWithText('thead th', 'Bilder'))
   await uploadImages(itemData, variantDetailsRef[imagesIndex])
 }
 
 const addWeight = async (itemData, variantDetailsRef) => {
-  const packageWeightIndex = getNodeIndex(findElementWithText('thead th', 'Package weight'))
+  const packageWeightIndex = getNodeIndex(findElementWithText('thead th', 'Gewicht des Pakets'))
   const packageWeightRef = variantDetailsRef[packageWeightIndex].querySelector('input')
   await fillLocalizedData(itemData, 'Gewicht', packageWeightRef, DEFAULT_CUP_WEIGHT_GRAMS, 1000)
 }
@@ -179,7 +181,7 @@ const fillLocalizedData = async (itemData, aspectName, elementRef, defaultValue,
   writeTextToRef(elementRef, value ? value * unit : defaultValue)
 }
 const addDimensions = async (itemData, variantDetailsRef) => {
-  const packageDimensionIndex = getNodeIndex(findElementWithText('thead th', 'Package dimension'))
+  const packageDimensionIndex = getNodeIndex(findElementWithText('thead th', 'Verpackungsmaße'))
 
   const dimensionsDialogRef = variantDetailsRef[packageDimensionIndex].querySelector(
     '[data-testid="beast-core-grid-col-wrapper"]',
@@ -187,13 +189,13 @@ const addDimensions = async (itemData, variantDetailsRef) => {
   dimensionsDialogRef.click()
   await asyncSleep(2000)
 
-  const lengthRef = document.querySelector('input[placeholder="Longest side"]')
+  const lengthRef = document.querySelector('input[placeholder="Längste Seite"]')
   await fillLocalizedData(itemData, 'Länge', lengthRef, 8, 1)
 
-  const widthRef = document.querySelector('input[placeholder="Second longest side"]')
+  const widthRef = document.querySelector('input[placeholder="Zweitlängste Seite"]')
   await fillLocalizedData(itemData, 'Durchmesser', widthRef, 8, 1)
 
-  const heightRef = document.querySelector('input[placeholder="Shortest side"]')
+  const heightRef = document.querySelector('input[placeholder="Kürzeste Seite"]')
   await fillLocalizedData(itemData, 'Höhe', heightRef, 10, 1)
 
   dimensionsDialogRef.click()
@@ -225,10 +227,10 @@ const uploadImages = async (itemData, imageCellRef) => {
 }
 
 const selectColorVariation = async () => {
-  findElementWithText('label div', 'Color').parentElement.querySelector('input').click()
+  findElementWithText('label div', 'Farbe').parentElement.querySelector('input').click()
   const colorSelectRef = findElementWithText(
     '[data-testid="beast-core-grid-col-wrapper"]',
-    'Color',
+    'Farbe',
   ).parentElement
   const colorSelect = colorSelectRef.querySelector('input')
   await asyncSleep(1000)
@@ -245,18 +247,20 @@ const selectMaterial = async () => {
   ).parentElement.querySelector('input')
   materialElement.click()
   await asyncSleep(1000)
-  findElementWithText('ul li div', 'Ceramic').click()
+  findElementWithText('ul li div', 'Keramik').click()
   await asyncSleep(1000)
 }
 const writeTitle = async (itemData) => {
-  const productTitleRef = document.querySelector("[placeholder='Please enter a product name']")
+  const productTitleRef = document.querySelector(
+    "[placeholder='Bitte geben Sie einen Produktnamen ein']",
+  )
   writeTextToRef(productTitleRef, itemData.title)
   await asyncSleep(1000)
 }
 const clickOnBrandButton = async () => {
   await asyncSleep(1000)
 
-  findElementWithText('[data-testid="beast-core-checkbox"]', 'This product does not have a brand')
+  findElementWithText('[data-testid="beast-core-checkbox"]', 'Dieses Produkt hat keine Marke')
     .querySelector('input')
     .click()
   await asyncSleep(1000)
@@ -264,7 +268,7 @@ const clickOnBrandButton = async () => {
 
 const addProductDescription = async (itemData) => {
   const descriptionRef = document.querySelector(
-    "[placeholder='Please enter a product description']",
+    "[placeholder='Bitte geben Sie eine Produktbeschreibung ein']",
   )
   descriptionRef.click()
   await asyncSleep(500)
@@ -273,7 +277,7 @@ const addProductDescription = async (itemData) => {
 }
 
 const clickNextButton = async () => {
-  const nextBtn = findElementWithText("[role='button'] div", 'Next')
+  const nextBtn = findElementWithText("[role='button'] div", 'Weiter')
   nextBtn?.click()
   await asyncSleep(4000)
 }
@@ -291,19 +295,19 @@ const clickCancelButton = async () => {
 const clickSaveOnImageButton = async (isLast) => {
   const nextBtn = findElementWithText(
     "[class^='bottomArea'] [role='button']",
-    isLast ? 'Save' : 'Next',
+    isLast ? 'Speichern' : 'Weiter',
   )
   nextBtn?.click()
   await asyncSleep(1000)
 }
 const clickSaveButton = async () => {
-  const nextBtn = findElementWithText("[role='button'] div", 'Save')
+  const nextBtn = findElementWithText("[role='button'] div", 'Speichern')
   nextBtn?.click()
   await asyncSleep(1000)
 }
 const selectCategory = async () => {
   const categoryOption =
-    'Home & Kitchen / Kitchen & Dining / Dining & Entertaining / Glassware & Drinkware / Cups, Mugs, & Saucers / Coffee Cups & Mugs'
+    'Haus und Küche / Küche & Esszimmer / Essen & Unterhaltung / Glas- & Trinkwaren / Becher, Tassen & Untertassen / Kaffeetassen & -becher'
   const categoryTextFieldRef = document.querySelector(
     '[data-testid="beast-core-cascader-input"] [class^="IPT_input"] input',
   )
