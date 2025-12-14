@@ -121,13 +121,13 @@ const updateProcessingStatus = async (isProcessing) => {
   const newStorage = { ...localStorage, isProcessing: isProcessing }
   await setLocalStorage(newStorage)
 }
-async function setBlobStorage(imageBlog) {
-  await localRef.set({ imageBlog: imageBlog })
+async function setBlobStorage(imageBlob) {
+  await localRef.set({ imageBlob: imageBlob })
 }
 
-async function getBlogStorage() {
+async function getBlobStorage() {
   const data = await localRef.get()
-  return data['imageBlog']
+  return data['imageBlob']
 }
 
 async function closeWindowIfExists(windowId) {
@@ -165,5 +165,5 @@ export {
   updateAdData,
   updateProcessingStatus,
   setBlobStorage,
-  getBlogStorage,
+  getBlobStorage,
 }

@@ -1,5 +1,5 @@
 import Browser from 'webextension-polyfill'
-import { getBlogStorage, runTimeMessage, setBlobStorage } from './browserMethods'
+import { getBlobStorage, runTimeMessage, setBlobStorage } from './browserMethods'
 import { MESSAGING } from './const'
 
 export const browserRef = Browser
@@ -76,13 +76,13 @@ async function blobToBase64(blob) {
   })
 }
 const getImage = async (imageUrl) => {
-  let imageBlob = null
+  console.log('image url----------', imageUrl)
 
   await runTimeMessage({
     action: MESSAGING.SET_BLOB_FROM_URL,
     imageUrl,
   })
-  imageBlob = await getBlogStorage()
+  let imageBlob = await getBlobStorage()
   await setBlobStorage('')
 
   return await fetch(imageBlob)
