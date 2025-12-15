@@ -112,6 +112,7 @@ async function uploadImages(allImages, uploadRef) {
     dt.items.add(image)
   }
   uploadRef.files = dt.files
+  await asyncSleep(3000)
   await uploadRef.dispatchEvent(new Event('change', { bubbles: true }))
 }
 

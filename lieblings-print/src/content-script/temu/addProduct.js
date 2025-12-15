@@ -6,6 +6,7 @@ import {
   findElementWithText,
   getNodeIndex,
   sanitizeValues,
+  uploadImages,
   writeTextToRef,
 } from '../../common/utils'
 
@@ -82,7 +83,7 @@ const selectHandlingTime = async () => {
   ).parentElement
   handlingTimeRef.querySelector('input').click()
   await asyncSleep(1000)
-  findElementWithText('ul[role="listbox"] li', '2').click()
+  findElementWithText('ul[role="listbox"] li', '2 Werktage').click()
   await asyncSleep(1000)
 }
 
@@ -98,9 +99,9 @@ const selectManufaturarTime = async () => {
 }
 
 const addProductIdentification = async (itemData) => {
-  const productIdentificationRef = findElementWithText(
+  const productIdentificationRef = findElementWithIncludeText(
     '[data-testid="beast-core-grid-col-wrapper"]',
-    '*Produktidentifikation',
+    'Produktidentifikation',
   ).parentElement.querySelector('input')
   productIdentificationRef.click()
   await asyncSleep(500)
@@ -112,9 +113,9 @@ const addProductIdentification = async (itemData) => {
   await asyncSleep(500)
 }
 const selectCountryOfOrigin = async () => {
-  const countryOfOriginRef = findElementWithText(
+  const countryOfOriginRef = findElementWithIncludeText(
     '[data-testid="beast-core-grid-col-wrapper"]',
-    '*Ursprungsland/-region',
+    'Ursprungsland/-region',
   ).parentElement.parentElement.querySelector('[data-testid="beast-core-select-htmlInput"]')
 
   countryOfOriginRef.click()
@@ -159,7 +160,7 @@ const addProductDetails = async (itemData) => {
   writeTextToRef(recommendedRetailPriceRef, '12.95')
   await asyncSleep(1000)
   const imagesIndex = getNodeIndex(findElementWithText('thead th', 'Bilder'))
-  await uploadImages(itemData, variantDetailsRef[imagesIndex])
+  await addItemImages(itemData, variantDetailsRef[imagesIndex])
 }
 
 const addWeight = async (itemData, variantDetailsRef) => {
@@ -172,12 +173,12 @@ const fillLocalizedData = async (itemData, aspectName, elementRef, defaultValue,
   const localData = itemData.localizedAspects
   const aspectValueRef = localData.find((aspect) => aspect.name === aspectName)
   elementRef.click()
-  await asyncSleep(300)
+  await asyncSleep(500)
   const aspectValue = aspectValueRef?.value
 
   const value = Number(sanitizeValues(aspectValue))
-  await asyncSleep(500)
   writeTextToRef(elementRef, value ? value * unit : defaultValue)
+  await asyncSleep(500)
 }
 const addDimensions = async (itemData, variantDetailsRef) => {
   const packageDimensionIndex = getNodeIndex(findElementWithText('thead th', 'Verpackungsmaße'))
@@ -201,9 +202,9 @@ const addDimensions = async (itemData, variantDetailsRef) => {
   await asyncSleep(1000)
 }
 
-const uploadImages = async (itemData, imageCellRef) => {
+const addItemImages = async (itemData, imageCellRef) => {
   imageCellRef.querySelector("[class^='imgsPopBtn']").click()
-  await asyncSleep(2000)
+  await asyncSleep(3000)
   const toAddImagesRef = Array.from(
     document.querySelectorAll('[data-testid="beast-core-upload"] input'),
   )
@@ -213,7 +214,7 @@ const uploadImages = async (itemData, imageCellRef) => {
   }
 
   await uploadImages(allImages, toAddImagesRef[0])
-
+  await asyncSleep(10000)
   const allAddedImages = Array.from(
     document.querySelectorAll("[class^='imageList'] [class^='editItem']"),
   )
