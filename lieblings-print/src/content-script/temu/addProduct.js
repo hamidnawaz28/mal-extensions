@@ -44,6 +44,8 @@ export const addRemainingDetails = async (itemData) => {
   await clickNextButton()
   // Step 2
   await selectMaterial()
+  await asyncSleep(2000)
+  await selectContact()
   await clickNextButton()
   // Step 2
   await selectColorVariation()
@@ -55,13 +57,16 @@ export const addRemainingDetails = async (itemData) => {
   await clickNextButton()
   await asyncSleep(2000)
   //step 4
+  await selectManufaturar()
+  await asyncSleep(2000)
   await addProductIdentification(itemData)
+  await asyncSleep(2000)
   await selectCountryOfOrigin()
-  await selectManufaturarTime()
+  await selectResponsiblePerson()
   await asyncSleep(2000)
   await uncheckOtherMarketplaces()
-  // await clickSubmitButton()
-  await asyncSleep(5000)
+  await clickSubmitButton()
+  // await asyncSleep(10000)
 }
 
 const uncheckOtherMarketplaces = async () => {
@@ -87,15 +92,32 @@ const selectHandlingTime = async () => {
   await asyncSleep(1000)
 }
 
-const selectManufaturarTime = async () => {
-  const manufaturarRef = findElementWithText(
+const selectManufaturar = async () => {
+  const manufaturarRef = findElementWithIncludeText(
     '[data-testid="beast-core-grid-col-wrapper"]',
     '*Hersteller',
   ).parentElement
-  manufaturarRef.querySelector('input[placeholder="Auswählen"]').click()
-  await asyncSleep(2000)
-  document.querySelector('ul[role="listbox"] li').click()
+  const manufacturarInput = manufaturarRef.querySelector('input[placeholder="Auswählen"]')
+  manufacturarInput.click()
   await asyncSleep(1500)
+  manufacturarInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))
+  await asyncSleep(1500)
+}
+
+const selectResponsiblePerson = async () => {
+  const responsiblePersonRef = findElementWithIncludeText(
+    '[data-testid="beast-core-grid-col-wrapper"]',
+    'EU-Verantwortlicher',
+  ).parentElement
+  const responsiblePersonInput = responsiblePersonRef.querySelector(
+    ':scope input[placeholder="Auswählen"]',
+  )
+  responsiblePersonInput.click()
+  await asyncSleep(2000)
+  responsiblePersonInput.dispatchEvent(
+    new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }),
+  )
+  await asyncSleep(2000)
 }
 
 const addProductIdentification = async (itemData) => {
@@ -249,6 +271,16 @@ const selectMaterial = async () => {
   findElementWithText('ul li div', 'Keramik').click()
   await asyncSleep(1000)
 }
+const selectContact = async () => {
+  const materialElement = findElementWithText(
+    "p[class^='itemTitle']",
+    '*Lippen- und Felgenkontakt',
+  ).parentElement.querySelector('input')
+  materialElement.click()
+  await asyncSleep(1000)
+  findElementWithText('ul li div', 'Nein').click()
+  await asyncSleep(1000)
+}
 const writeTitle = async (title) => {
   const productTitleRef = document.querySelector(
     "[placeholder='Bitte geben Sie einen Produktnamen ein']",
@@ -281,7 +313,9 @@ const clickNextButton = async () => {
   await asyncSleep(4000)
 }
 const clickSubmitButton = async () => {
-  const nextBtn = findElementWithText("[role='button'] div", 'Submit')
+  const nextBtn = findElementWithText("[role='button'] div", 'Absenden')
+  nextBtn?.click()
+  await asyncSleep(1000)
   nextBtn?.click()
   await asyncSleep(1000)
 }

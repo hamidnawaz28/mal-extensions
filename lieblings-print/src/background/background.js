@@ -84,7 +84,7 @@ browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
         action: ADD_PRODUCT.ENTER_REMAINING_DETAILS,
         itemData,
       })
-      await browserRef.windows.remove(windowTab.id)
+      // await browserRef.windows.remove(windowTab.id)
     }
 
     sendResponse({})

@@ -5,7 +5,7 @@ import ZipPlugin from 'zip-webpack-plugin'
 
 const config = {
   entry: {
-    popup: '/src/popup/index.tsx',
+    popup: '/src/popup/popup.js',
     addProductEbay: '/src/content-script/ebay/addProduct.js',
     addProductTemu: '/src/content-script/temu/addProduct.js',
     placeLieblingsOrder: '/src/content-script/lieblingsflair/placeOrder.js',

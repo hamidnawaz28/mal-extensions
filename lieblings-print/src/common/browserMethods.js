@@ -14,7 +14,8 @@ async function setSyncStorage(data) {
 }
 
 async function setLocalStorage(data) {
-  await localRef.set({ [STORE_NAME]: data })
+  const ls = await getLocalStorage()
+  await localRef.set({ [STORE_NAME]: { ...ls, ...data } })
 }
 
 async function getSyncStorage() {

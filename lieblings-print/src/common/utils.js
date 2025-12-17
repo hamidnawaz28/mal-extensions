@@ -229,8 +229,95 @@ const checkboxInstance = (labelText, className, style = {}) => {
 
   return wrapper
 }
+const inputInstance = (placeholder, id, type = 'text', style = {}) => {
+  const input = document.createElement('input')
+  input.type = type
+  input.placeholder = placeholder
+  input.id = id
 
+  const inputStyle = {
+    padding: '6px 10px',
+    margin: '8px',
+    borderRadius: '4px',
+    border: '1px solid #ddd',
+    outline: 'none',
+    fontSize: '12px',
+    fontWeight: '500',
+    color: '#333',
+    background: '#fff',
+    boxShadow: '0 3px 8px rgba(0,0,0,0.12)',
+    transition: 'all 0.25s ease',
+    width: '180px',
+    ...style,
+  }
+
+  Object.assign(input.style, inputStyle)
+
+  input.onmouseenter = () => {
+    input.style.boxShadow = '0 5px 14px rgba(0,0,0,0.18)'
+  }
+
+  input.onmouseleave = () => {
+    if (document.activeElement !== input) {
+      input.style.boxShadow = '0 3px 8px rgba(0,0,0,0.12)'
+    }
+  }
+
+  input.onfocus = () => {
+    input.style.border = '1px solid #FF6A00'
+    input.style.boxShadow = '0 0 0 2px rgba(255,106,0,0.25)'
+  }
+
+  input.onblur = () => {
+    input.style.border = '1px solid #ddd'
+    input.style.boxShadow = '0 3px 8px rgba(0,0,0,0.12)'
+  }
+
+  return input
+}
+const divInstance = (id, style = {}, content = null) => {
+  const div = document.createElement('div')
+  if (id) div.id = id
+
+  const divStyle = {
+    padding: '10px',
+    margin: '8px',
+    borderRadius: '6px',
+    background: '#fff',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.14)',
+    transition: 'all 0.25s ease',
+    display: 'block',
+    ...style,
+  }
+
+  Object.assign(div.style, divStyle)
+
+  // Hover elevation
+  div.onmouseenter = () => {
+    div.style.transform = 'translateY(-2px)'
+    div.style.boxShadow = '0 8px 20px rgba(0,0,0,0.22)'
+  }
+
+  div.onmouseleave = () => {
+    div.style.transform = 'translateY(0)'
+    div.style.boxShadow = '0 4px 12px rgba(0,0,0,0.14)'
+  }
+
+  // Optional content
+  if (content) {
+    if (typeof content === 'string') {
+      div.innerHTML = content
+    } else if (content instanceof Node) {
+      div.appendChild(content)
+    } else if (Array.isArray(content)) {
+      content.forEach((node) => node && div.appendChild(node))
+    }
+  }
+
+  return div
+}
 export {
+  inputInstance,
   checkboxInstance,
   waitForCondition,
   waitTillRefAppears,
@@ -246,4 +333,5 @@ export {
   findElementWithIncludeText,
   buttonInstance,
   urlToFile,
+  divInstance,
 }

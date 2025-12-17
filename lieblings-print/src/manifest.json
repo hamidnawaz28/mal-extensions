@@ -31,6 +31,9 @@
       "js": ["syncTrackingNumber.js"]
     }
   ],
+  "action": {
+    "default_popup": "popup.html"
+  },
   "web_accessible_resources": [
     {
       "resources": ["addProductTemu.js"],
