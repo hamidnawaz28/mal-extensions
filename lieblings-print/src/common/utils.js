@@ -103,7 +103,20 @@ async function clickUsingPosition(elementRef) {
     }),
   )
 }
-
+const parseDescription = (itemData) => {
+  const htmlString = itemData?.description
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(htmlString, 'text/html')
+  const rows = [...doc.querySelectorAll('.description .MsoListParagraphCxSpLast')]
+    .map((el) =>
+      el.innerText
+        .replace(/\s*\n\s*/g, ' ')
+        .replace(/\s{2,}/g, ' ')
+        .trim(),
+    )
+    .slice(0, 6)
+  return rows
+}
 async function uploadImages(allImages, uploadRef) {
   const dt = new DataTransfer()
   for (let imageIndex = 0; imageIndex < allImages.length; imageIndex++) {
@@ -334,4 +347,5 @@ export {
   buttonInstance,
   urlToFile,
   divInstance,
+  parseDescription,
 }

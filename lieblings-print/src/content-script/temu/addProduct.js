@@ -5,6 +5,7 @@ import {
   findElementWithIncludeText,
   findElementWithText,
   getNodeIndex,
+  parseDescription,
   sanitizeValues,
   uploadImages,
   writeTextToRef,
@@ -41,7 +42,16 @@ export const addRemainingDetails = async (itemData) => {
   await asyncSleep(1000)
   await clickOnBrandButton()
   await addProductDescription(itemData)
+  const imagesRef = findElementWithText(
+    'div[data-testid]',
+    'Detailbilder',
+  ).parentElement.querySelector('input')
+
+  await addDescriptionBullets(itemData)
+  await addItemImages(itemData, imagesRef)
+  await asyncSleep(2000)
   await clickNextButton()
+
   // Step 2
   await selectMaterial()
   await asyncSleep(2000)
@@ -54,9 +64,11 @@ export const addRemainingDetails = async (itemData) => {
   await asyncSleep(2000)
   // Step 3
   await selectHandlingTime()
+  await addProductSku(itemData)
   await clickNextButton()
   await asyncSleep(2000)
   //step 4
+  await isUnderIdList()
   await selectManufaturar()
   await asyncSleep(2000)
   await addProductIdentification(itemData)
@@ -69,6 +81,21 @@ export const addRemainingDetails = async (itemData) => {
   // await asyncSleep(10000)
 }
 
+const addDescriptionBullets = async (itemData) => {
+  const descriptionRows = parseDescription(itemData)
+  for (let rowIndex = 0; rowIndex < descriptionRows.length; rowIndex++) {
+    findElementWithIncludeText("div[role='button']", 'Aufzählungspunkt hinzufügen').click()
+    await asyncSleep(1500)
+    const row = descriptionRows[rowIndex]
+    const descriptionBulletRef = document.querySelectorAll(
+      "[placeholder='Bitte geben Sie den Aufzählungspunkt ein']",
+    )[rowIndex]
+    descriptionBulletRef.click()
+    await asyncSleep(500)
+    writeTextToRef(descriptionBulletRef, row)
+    await asyncSleep(500)
+  }
+}
 const uncheckOtherMarketplaces = async () => {
   const marketplaceCheckRef = findElementWithIncludeText(
     '[class^="replicateCheckboxWrapper"]',
@@ -92,10 +119,21 @@ const selectHandlingTime = async () => {
   await asyncSleep(1000)
 }
 
+const addProductSku = async (itemData) => {
+  const handlingTimeRef = findElementWithText(
+    '[data-testid="beast-core-grid-col-wrapper"]',
+    'Beitrags-SKU',
+  ).parentElement
+  const inputRef = handlingTimeRef.querySelector('input')
+  inputRef.click()
+  await asyncSleep(1000)
+  await fillLocalizedDataSKU(itemData, 'Herstellernummer', inputRef)
+  await asyncSleep(1000)
+}
 const selectManufaturar = async () => {
   const manufaturarRef = findElementWithIncludeText(
     '[data-testid="beast-core-grid-col-wrapper"]',
-    '*Hersteller',
+    'Hersteller',
   ).parentElement
   const manufacturarInput = manufaturarRef.querySelector('input[placeholder="Auswählen"]')
   manufacturarInput.click()
@@ -182,7 +220,23 @@ const addProductDetails = async (itemData) => {
   writeTextToRef(recommendedRetailPriceRef, '12.95')
   await asyncSleep(1000)
   const imagesIndex = getNodeIndex(findElementWithText('thead th', 'Bilder'))
-  await addItemImages(itemData, variantDetailsRef[imagesIndex])
+
+  variantDetailsRef[imagesIndex].querySelector("[class^='imgsPopBtn']").click()
+  await asyncSleep(3000)
+  const toAddImagesRef = Array.from(
+    document.querySelectorAll('[data-testid="beast-core-upload"] input'),
+  )
+  await addItemImages(itemData, toAddImagesRef[0])
+
+  const addLinkIndex = getNodeIndex(findElementWithText('thead th', 'Referenzlink'))
+  const addLinkRef = variantDetailsRef[addLinkIndex]
+  addLinkRef.querySelector('[class^="addBtn"]').click()
+  await asyncSleep(2000)
+  const linkInputRef = document.querySelector("[class^='provideUrl2PriceModalTextArea'] textarea")
+  writeTextToRef(linkInputRef, `https://www.ebay.com/itm/${itemData.legacyItemId}`)
+  await asyncSleep(1000)
+  await clickSaveButton()
+  await asyncSleep(1000)
 }
 
 const addWeight = async (itemData, variantDetailsRef) => {
@@ -202,6 +256,17 @@ const fillLocalizedData = async (itemData, aspectName, elementRef, defaultValue,
   writeTextToRef(elementRef, value ? value * unit : defaultValue)
   await asyncSleep(500)
 }
+const fillLocalizedDataSKU = async (itemData, aspectName, elementRef) => {
+  const localData = itemData.localizedAspects
+  const aspectValueRef = localData.find((aspect) => aspect.name === aspectName)
+  elementRef.click()
+  await asyncSleep(500)
+  const aspectValue = aspectValueRef?.value?.split('-')?.[1]
+
+  writeTextToRef(elementRef, aspectValue ? aspectValue : '')
+  await asyncSleep(500)
+}
+
 const addDimensions = async (itemData, variantDetailsRef) => {
   const packageDimensionIndex = getNodeIndex(findElementWithText('thead th', 'Verpackungsmaße'))
 
@@ -224,18 +289,15 @@ const addDimensions = async (itemData, variantDetailsRef) => {
   await asyncSleep(1000)
 }
 
-const addItemImages = async (itemData, imageCellRef) => {
-  imageCellRef.querySelector("[class^='imgsPopBtn']").click()
+const addItemImages = async (itemData, imageRef) => {
   await asyncSleep(3000)
-  const toAddImagesRef = Array.from(
-    document.querySelectorAll('[data-testid="beast-core-upload"] input'),
-  )
+
   let allImages = [itemData?.image, ...(itemData?.additionalImages || [])].filter(Boolean)
   if (allImages.length > 10) {
     allImages = allImages.slice(0, 10)
   }
 
-  await uploadImages(allImages, toAddImagesRef[0])
+  await uploadImages(allImages, imageRef)
   await asyncSleep(10000)
   const allAddedImages = Array.from(
     document.querySelectorAll("[class^='imageList'] [class^='editItem']"),
@@ -245,6 +307,7 @@ const addItemImages = async (itemData, imageCellRef) => {
     await asyncSleep(5000)
   }
   await clickSaveButton()
+  await asyncSleep(2000)
 }
 
 const selectColorVariation = async () => {
@@ -269,6 +332,16 @@ const selectMaterial = async () => {
   materialElement.click()
   await asyncSleep(1000)
   findElementWithText('ul li div', 'Keramik').click()
+  await asyncSleep(1000)
+}
+const isUnderIdList = async () => {
+  const inputRef = findElementWithIncludeText(
+    '[data-testid="beast-core-grid-col-wrapper"]',
+    'Wurden Produkte unter dieser',
+  ).parentElement.querySelector('input')
+  inputRef.click()
+  await asyncSleep(1000)
+  findElementWithIncludeText('ul li div', 'keine Produkte mit dieser Warennummer wurden').click()
   await asyncSleep(1000)
 }
 const selectContact = async () => {
