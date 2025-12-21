@@ -56,5 +56,21 @@ const EBAY = {
     'https://api.ebay.com/oauth/api_scope/commerce.shipping',
   ].join('%20'),
 }
-
-export { SYNC_TRACKING_NUMBER, MESSAGING, EBAY, ADD_PRODUCT, PLACE_ORDER }
+const ITEM_DESCRIPTION =
+  'Beginnen Sie jeden Tag mit wahrer Freude, indem Sie zu unserer außergewöhnlichen Kaffeetasse greifen, die entworfen wurde, um jeden Moment Ihres Lieblingsgetränks zu feiern. Diese Tasse ist viel mehr als nur ein Gefäß – sie ist Ihr persönliches Ritual, das einen gewöhnlichen Morgenkaffee in pure Entspannung und Genuss verwandelt. Aus hochwertig ausgewählter Keramik gefertigt, garantiert dieses Stück unvergleichliche Haltbarkeit und beeindruckt mit seiner glatten Oberfläche und komfortablen Form. Der ergonomische Griff sorgt für maximalen Komfort und liegt perfekt in der Hand, egal, ob Sie einen schnellen Espresso oder aromatischen Cappuccino schlürfen – oder große, wärmende Teetassen genießen. Die Kapazität wurde optimal gewählt, damit Sie Ihre Lieblingsmenge an Getränk genießen können, ohne ständig nachfüllen zu müssen, egal, ob Sie starken schwarzen Kaffee zum Aufwachen oder zarten Latte mit fluffigem Schaum bevorzugen. Unsere Tasse erfüllt alle Erwartungen mit ihrem universellen, aber eleganten Design, das sich gut in jede Küchendekoration einfügt, von minimalistischen modernen Räumen bis hin zu gemütlichen Landhaus-Atmosphären. Die neutrale Farbpalette (oder bestimmte Farben, falls dies eine Überlegung ist, wie Weiß/Schwarz Pastelltöne) macht das Schlürfen zeitlos und immer stilvoll. Die perfekte Geschenkidee für jeden Anlass – suchen Sie ein Geburtstagsgeschenk, eine Feiertagsfreude für Freunde oder eine wertschätzende Geste für Familie und Kollegen? DIESE TASSE ist die perfekte Wahl für jeden Kaffee- oder Teeliebhaber. Praktisch & ästhetisch, garantiert sie ein Lächeln auf dem Gesicht des Beschenkten. Außerdem ist sie spülmaschinengeeignet für einfache Reinigung und Zeitersparnis, hitzebeständig und mikrowellengeeignet'
+const ITEM_DETAILS = [
+  'Tassen für jeden Anlass Diese originelle Statement Tasse ist das ideale Geschenk für jeden Büromenschen oder Kaffeetrinker! Wir bieten die passende Tasse als kreative Überraschung für jeden Anlass - ein Mitbringsel, das von Herzen kommt. · Ideale Bürotasse Weg mit den öden Einheitstassen im Schrank! Diese außergewöhnliche Kaffeetasse bringt frischen Wind in die Teeküche und lässt sich für alle Kalt- oder Heißgetränke einsetzen. Der ideale Begleiter für zuhause, im Büro oder auf dem Bau. Eine tolle Geschenkidee für Tee-, Kaffee- oder Kakaotrinker.',
+  'Originelle Sprüche Unsere einfallsreichen Sprüche sorgen für Abwechslung auf jedem Büro- oder Küchentisch und zaubern sofort ein Lächeln aufs Gesicht. Als Wichtelgeschenk, zu Weihnachten, zum Geburtstag, zur Beförderung oder einfach nur so, um einem lieben Menschen eine Freude zu bereiten. Dieser Becher ist ein richtiger Hingucker für alle, die das Leben mit Humor nehmen. · Hochwertige Verarbeitung Die Tasse wird beidseitig in höchster Farbbrillanz bedruckt, sodass sie sowohl für Links- als auch Rechtshänder ideal geeignet ist. Der großzügige Henkel in C-Form liegt angenehm in der Hand und sorgt auch dann für einen festen Halt, wenn die Tasse befüllt ist. So lässt sich das',
+  'Meine neue Lieblingstasse Die hochwertige Tasse aus Keramik hat eine großzügige Füllmenge von 330ml und ist somit der ideale Becher für alle Heißgetränke. Der originelle Statement-Spruch bringt sofort gute Laune und verschönert jeden tristen Morgen. Aus dieser Spruchtasse schmeckt der morgendliche Kaffee gleich ein Stückchen besser!',
+  'Eine perfekte Geschenkidee· Pflegeleicht und Spülmaschinenfest Unsere hochwertigen Tassen sind spülmaschinenfest und überzeugen durch die hohe Langlebigkeit. Unser hoher Qualitätsstandard ermöglicht 2500 Spülgänge ohne Verlust der Druckqualität. Dennoch raten wir dazu, die Tassen bevorzugt per Hand abzuwaschen, um die Langlebigkeit des Drucks zu verlängern.',
+  'Mit Liebe aus Deutschland Unsere Tassen werden mit viel Liebe zum Detail gestaltet und in sorgfältiger Handarbeit beidseitig bedruckt. Es handelt sich bei den Spruchtassen nicht um reine Dekorationsobjekte, sondern um lebensmittelechte Qualitätsware Made in Germany. Nicht nur der Druck unserer Motive wird in Deutschland ausgeführt, sondern wir versenden unsere Produkte auch von hier aus. Für langlebige Produkte und höchste Kundenzufriedenheit!',
+]
+export {
+  SYNC_TRACKING_NUMBER,
+  MESSAGING,
+  EBAY,
+  ADD_PRODUCT,
+  PLACE_ORDER,
+  ITEM_DESCRIPTION,
+  ITEM_DETAILS,
+}

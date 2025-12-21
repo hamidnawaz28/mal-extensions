@@ -1,11 +1,10 @@
-import { ADD_PRODUCT } from '../../common/const'
+import { ADD_PRODUCT, ITEM_DESCRIPTION, ITEM_DETAILS } from '../../common/const'
 import {
   asyncSleep,
   browserRef,
   findElementWithIncludeText,
   findElementWithText,
   getNodeIndex,
-  parseDescription,
   sanitizeValues,
   uploadImages,
   writeTextToRef,
@@ -46,14 +45,14 @@ export const addRemainingDetails = async (itemData) => {
     'div[data-testid]',
     'Detailbilder',
   ).parentElement.querySelector('input')
-
+  await dropDownSelect('Artikelsteuercode (ITC)', 'GEN STANDARD')
   await addDescriptionBullets(itemData)
   await addItemImages(itemData, imagesRef)
   await asyncSleep(2000)
   await clickNextButton()
 
   // Step 2
-  await selectMaterial()
+  await dropDownSelect('*Material', 'Keramik')
   await asyncSleep(2000)
   await selectContact()
   await clickNextButton()
@@ -68,7 +67,13 @@ export const addRemainingDetails = async (itemData) => {
   await clickNextButton()
   await asyncSleep(2000)
   //step 4
-  await isUnderIdList()
+
+  await dropDownSelect(
+    'Wurden Produkte unter dieser',
+    'keine Produkte mit dieser Warennummer wurden',
+  )
+  await dropDownSelect('Etikett für Kontakt mit Lebensmitteln', 'Informationen nicht zutreffend')
+  await dropDownSelect('Warnhinweis oder Sicherheitsinformationen', 'Produktdetailseite anzeigen')
   await selectManufaturar()
   await asyncSleep(2000)
   await addProductIdentification(itemData)
@@ -82,7 +87,7 @@ export const addRemainingDetails = async (itemData) => {
 }
 
 const addDescriptionBullets = async (itemData) => {
-  const descriptionRows = parseDescription(itemData)
+  const descriptionRows = ITEM_DETAILS
   for (let rowIndex = 0; rowIndex < descriptionRows.length; rowIndex++) {
     findElementWithIncludeText("div[role='button']", 'Aufzählungspunkt hinzufügen').click()
     await asyncSleep(1500)
@@ -261,7 +266,7 @@ const fillLocalizedDataSKU = async (itemData, aspectName, elementRef) => {
   const aspectValueRef = localData.find((aspect) => aspect.name === aspectName)
   elementRef.click()
   await asyncSleep(500)
-  const aspectValue = aspectValueRef?.value?.split('-')?.[1]
+  const aspectValue = aspectValueRef?.value
 
   writeTextToRef(elementRef, aspectValue ? aspectValue : '')
   await asyncSleep(500)
@@ -324,26 +329,17 @@ const selectColorVariation = async () => {
   await asyncSleep(1000)
 }
 
-const selectMaterial = async () => {
-  const materialElement = findElementWithText(
-    "p[class^='itemTitle']",
-    '*Material',
-  ).parentElement.querySelector('input')
-  materialElement.click()
-  await asyncSleep(1000)
-  findElementWithText('ul li div', 'Keramik').click()
-  await asyncSleep(1000)
-}
-const isUnderIdList = async () => {
+const dropDownSelect = async (label, optionText) => {
   const inputRef = findElementWithIncludeText(
     '[data-testid="beast-core-grid-col-wrapper"]',
-    'Wurden Produkte unter dieser',
+    label,
   ).parentElement.querySelector('input')
   inputRef.click()
   await asyncSleep(1000)
-  findElementWithIncludeText('ul li div', 'keine Produkte mit dieser Warennummer wurden').click()
+  findElementWithIncludeText('ul li div', optionText).click()
   await asyncSleep(1000)
 }
+
 const selectContact = async () => {
   const materialElement = findElementWithText(
     "p[class^='itemTitle']",
@@ -376,7 +372,7 @@ const addProductDescription = async (itemData) => {
   )
   descriptionRef.click()
   await asyncSleep(500)
-  writeTextToRef(descriptionRef, itemData.shortDescription)
+  writeTextToRef(descriptionRef, ITEM_DESCRIPTION)
   await asyncSleep(500)
 }
 

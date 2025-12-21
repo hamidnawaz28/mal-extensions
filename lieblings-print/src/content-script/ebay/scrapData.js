@@ -8,11 +8,11 @@ export const scrapData = () => {
     .innerText.replace('£', '')
     .replace(',', '')
     .trim()
-
-  data.images = Array.from(
-    document.querySelectorAll('.ux-image-carousel-item.image-treatment.image img'),
+  const allImages = document.querySelectorAll(
+    '.x-photos-min-view .ux-image-carousel-item.image-treatment.image[data-idx]>img',
   )
-    .map((el) => el.src)
+  data.images = Array.from(allImages)
+    .map((item) => item.getAttribute('data-zoom-src'))
     .filter((el) => el != '')
 
   data.length = getMetaData('length')?.replace('mm', '') ?? undefined
