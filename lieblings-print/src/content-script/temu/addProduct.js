@@ -68,10 +68,7 @@ export const addRemainingDetails = async (itemData) => {
   await asyncSleep(2000)
   //step 4
 
-  await dropDownSelect(
-    'Wurden Produkte unter dieser',
-    'keine Produkte mit dieser Warennummer wurden',
-  )
+  await dropDownSelect('Wurden Produkte unter dieser', 'Produkte unter dieser Waren-ID wurden')
   await dropDownSelect('Etikett für Kontakt mit Lebensmitteln', 'Informationen nicht zutreffend')
   await dropDownSelect('Warnhinweis oder Sicherheitsinformationen', 'Produktdetailseite anzeigen')
   await selectManufaturar()
@@ -199,10 +196,7 @@ const addProductDetails = async (itemData) => {
   )
   const sellerFullfillmentQuatityRef =
     variantDetailsRef[sellerFullfillmentQuatityIndex].querySelector('input')
-  writeTextToRef(
-    sellerFullfillmentQuatityRef,
-    itemData.estimatedAvailabilities[0].estimatedAvailableQuantity,
-  )
+  writeTextToRef(sellerFullfillmentQuatityRef, 1000)
   await addWeight(itemData, variantDetailsRef)
   await addDimensions(itemData, variantDetailsRef)
 
