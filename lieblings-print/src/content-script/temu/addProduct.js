@@ -86,11 +86,11 @@ export const addRemainingDetails = async (itemData) => {
 const addDescriptionBullets = async (itemData) => {
   const descriptionRows = ITEM_DETAILS
   for (let rowIndex = 0; rowIndex < descriptionRows.length; rowIndex++) {
-    findElementWithIncludeText("div[role='button']", 'Aufzählungspunkt hinzufügen').click()
+    findElementWithIncludeText("div[role='button']", 'Aufzählungspunkt hinzufügen')?.click()
     await asyncSleep(1500)
     const row = descriptionRows[rowIndex]
     const descriptionBulletRef = document.querySelectorAll(
-      "[placeholder='Bitte geben Sie den Aufzählungspunkt ein']",
+      "[placeholder='aufzählungspunkt eingeben']",
     )[rowIndex]
     descriptionBulletRef.click()
     await asyncSleep(500)
