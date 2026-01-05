@@ -1,5 +1,5 @@
-const DEFAULT_WORK_MIN = 1;
-const DEFAULT_BREAK_MIN = 1;
+const DEFAULT_WORK_MIN = 45;
+const DEFAULT_BREAK_MIN = 15;
 
 // Install
 chrome.runtime.onInstalled.addListener(() => {

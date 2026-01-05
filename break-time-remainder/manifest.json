@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Break Reminder",
+  "name": "Break Time Remainder",
   "version": "1.0",
-  "description": "Enforces healthy work breaks - shows banner after 45 minutes, blocks new tabs during 15-minute break periods",
+  "description": "Enforces healthy work breaks - shows banner after selected minutes, blocks new tabs during selected-minute break periods",
   "permissions": ["tabs", "storage", "alarms", "scripting"],
   "host_permissions": ["<all_urls>"],
   "background": {
