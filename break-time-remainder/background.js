@@ -1,7 +1,6 @@
-// const WORK_TIME = 45 * 60 * 1000; // 45 minutes in milliseconds
-const WORK_TIME = 45 * 60 * 1000; // 45 minutes in milliseconds
+const WORK_TIME = 1 * 60 * 1000; // 45 minutes in milliseconds
 
-const BREAK_TIME = 15 * 60 * 1000; // 15 minutes in milliseconds
+const BREAK_TIME = 1 * 60 * 1000; // 15 minutes in milliseconds
 
 let startTime = null;
 let isOnBreak = false;
@@ -9,12 +8,20 @@ let breakEndTime = null;
 
 // Initialize on extension install
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.local.set({
+  chrome.storage.sync.set({
     startTime: Date.now(),
     isOnBreak: false,
     breakEndTime: null,
   });
   startTracking();
+  chrome.tabs.query({}, (tabs) => {
+    tabs.forEach((tab) => {
+      // avoid chrome:// and extension pages
+      if (tab.id && tab.url && !tab.url.startsWith("chrome://")) {
+        chrome.tabs.reload(tab.id);
+      }
+    });
+  });
 });
 
 // Start tracking when service worker starts
@@ -24,7 +31,7 @@ chrome.runtime.onStartup.addListener(() => {
 
 // Load state from storage and continue tracking
 async function loadStateAndTrack() {
-  const data = await chrome.storage.local.get([
+  const data = await chrome.storage.sync.get([
     "startTime",
     "isOnBreak",
     "breakEndTime",
@@ -57,7 +64,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 
 // Check if work time has exceeded 45 minutes
 async function checkWorkTime() {
-  const data = await chrome.storage.local.get(["startTime", "isOnBreak"]);
+  const data = await chrome.storage.sync.get(["startTime", "isOnBreak"]);
 
   if (data.isOnBreak) return;
 
@@ -73,7 +80,7 @@ async function startBreak() {
   isOnBreak = true;
   breakEndTime = Date.now() + BREAK_TIME;
 
-  await chrome.storage.local.set({
+  await chrome.storage.sync.set({
     isOnBreak: true,
     breakEndTime: breakEndTime,
   });
@@ -82,9 +89,9 @@ async function startBreak() {
   const tabs = await chrome.tabs.query({});
   for (const tab of tabs) {
     if (
-      tab.url &&
-      !tab.url.startsWith("chrome://") &&
-      !tab.url.startsWith("chrome-extension://")
+      tab.url
+      // !tab.url.startsWith("chrome://") &&
+      // !tab.url.startsWith("chrome-extension")
     ) {
       chrome.tabs.sendMessage(tab.id, { action: "showBanner" }).catch(() => {});
     }
@@ -100,7 +107,7 @@ async function startBreak() {
 
 // Block new tabs during break period
 async function blockNewTabs(tab) {
-  const data = await chrome.storage.local.get(["isOnBreak"]);
+  const data = await chrome.storage.sync.get(["isOnBreak"]);
 
   if (data.isOnBreak) {
     // Close the new tab
@@ -110,7 +117,7 @@ async function blockNewTabs(tab) {
 
 // Check if break time is over
 async function checkBreakStatus() {
-  const data = await chrome.storage.local.get(["isOnBreak", "breakEndTime"]);
+  const data = await chrome.storage.sync.get(["isOnBreak", "breakEndTime"]);
 
   if (!data.isOnBreak) return;
 
@@ -124,7 +131,7 @@ async function endBreak() {
   isOnBreak = false;
   startTime = Date.now();
 
-  await chrome.storage.local.set({
+  await chrome.storage.sync.set({
     startTime: startTime,
     isOnBreak: false,
     breakEndTime: null,
@@ -166,7 +173,7 @@ async function resetTimer() {
   }
 
   // Reset start time
-  await chrome.storage.local.set({
+  await chrome.storage.sync.set({
     startTime: Date.now(),
     isOnBreak: false,
     breakEndTime: null,

@@ -1,6 +1,6 @@
 // Check if banner should be shown on page load
 (async function () {
-  const data = await chrome.storage.local.get(["isOnBreak"]);
+  const data = await chrome.storage.sync.get(["isOnBreak"]);
   if (data.isOnBreak) {
     createBanner();
   }
@@ -24,20 +24,44 @@ function createBanner() {
   banner.id = "break-time-banner";
 
   banner.innerHTML = `
-    <div class="banner-content">
-      <div class="banner-icon">⏸️</div>
-      <div class="banner-text">
-        <div class="banner-title">Time for a Break!</div>
-        <div class="banner-message">You've been working for 45 minutes. Take a 15-minute break to rest your eyes and mind.</div>
-        <div class="banner-timer" id="banner-timer">15:00 remaining</div>
+  <div class="banner-content">
+    <div class="banner-icon">⏸️</div>
+
+    <div class="banner-text">
+      <div class="banner-title">Time for a Break!</div>
+      <div class="banner-message">
+        You've been working for 45 minutes. Take a 15-minute break.
       </div>
-      <div class="banner-tips">
-        <strong>Break Tips:</strong> Stand up, stretch, drink water, look away from the screen
+      <div class="banner-timer" id="banner-timer">15:00 remaining</div>
+
       </div>
+      <button id="banner-reset-btn" class="banner-reset-btn">
+        ▶ Resume Work
+      </button>
+
+    <div class="banner-tips">
+      <strong>Break Tips:</strong> Stand up, stretch, drink water
     </div>
-  `;
+  </div>
+`;
 
   document.body.appendChild(banner);
+  const resetBtn = banner.querySelector("#banner-reset-btn");
+
+  resetBtn.addEventListener("click", async () => {
+    // Clear break state
+    await chrome.storage.sync.set({
+      isOnBreak: false,
+      breakEndTime: null,
+      workStartTime: Date.now(),
+    });
+
+    // Inform background (optional)
+    chrome.runtime.sendMessage({ action: "resetTimer" });
+
+    // Remove banner immediately
+    removeBanner();
+  });
 
   // Start timer update
   updateBannerTimer();
@@ -59,7 +83,7 @@ async function updateBannerTimer() {
   const timerElement = document.getElementById("banner-timer");
   if (!timerElement) return;
 
-  const data = await chrome.storage.local.get(["breakEndTime"]);
+  const data = await chrome.storage.sync.get(["breakEndTime"]);
   const remaining = data.breakEndTime - Date.now();
 
   if (remaining <= 0) {

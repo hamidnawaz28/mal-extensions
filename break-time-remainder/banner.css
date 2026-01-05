@@ -1,6 +1,7 @@
 #break-time-banner {
   position: fixed;
   top: 0;
+  height: 100%;
   left: 0;
   right: 0;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -24,13 +25,13 @@
 }
 
 .banner-content {
-  max-width: 1200px;
   margin: 0 auto;
   padding: 20px 30px;
   display: flex;
   align-items: center;
-  gap: 20px;
   flex-wrap: wrap;
+  flex-direction: column;
+  gap: 60px;
 }
 
 .banner-icon {
@@ -51,6 +52,10 @@
 .banner-text {
   flex: 1;
   min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
 }
 
 .banner-title {
@@ -118,4 +123,24 @@
     font-size: 13px;
     width: 100%;
   }
+}
+
+#banner-reset-btn {
+  width: 200px;
+  padding: 12px;
+  background: white;
+  color: #667eea;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.2s;
+}
+#banner-reset-btn:hover {
+  background: #f0f0f0;
+}
+#banner-reset-btn:active {
+  background: #e0e0e0;
 }

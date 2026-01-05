@@ -1,5 +1,5 @@
-const WORK_TIME = 45 * 60 * 1000;
-const BREAK_TIME = 15 * 60 * 1000;
+const WORK_TIME = 1 * 60 * 1000;
+const BREAK_TIME = 1 * 60 * 1000;
 
 const statusLabel = document.getElementById("statusLabel");
 const timeDisplay = document.getElementById("timeDisplay");
@@ -20,7 +20,7 @@ resetBtn.addEventListener("click", async () => {
 });
 
 async function updateDisplay() {
-  const data = await chrome.storage.local.get([
+  const data = await chrome.storage.sync.get([
     "startTime",
     "isOnBreak",
     "breakEndTime",
