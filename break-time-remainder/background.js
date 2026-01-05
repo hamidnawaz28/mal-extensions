@@ -1,19 +1,16 @@
-const WORK_TIME = 1 * 60 * 1000; // 45 minutes in milliseconds
+const DEFAULT_WORK_MIN = 1;
+const DEFAULT_BREAK_MIN = 1;
 
-const BREAK_TIME = 1 * 60 * 1000; // 15 minutes in milliseconds
-
-let startTime = null;
-let isOnBreak = false;
-let breakEndTime = null;
-
-// Initialize on extension install
+// Install
 chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.sync.set({
-    startTime: Date.now(),
+    workDurationMs: DEFAULT_WORK_MIN * 60000,
+    breakDurationMs: DEFAULT_BREAK_MIN * 60000,
+    startTime: null,
+    isRunning: false,
     isOnBreak: false,
     breakEndTime: null,
   });
-  startTracking();
   chrome.tabs.query({}, (tabs) => {
     tabs.forEach((tab) => {
       // avoid chrome:// and extension pages
@@ -24,166 +21,155 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
-// Start tracking when service worker starts
-chrome.runtime.onStartup.addListener(() => {
-  loadStateAndTrack();
-});
+// Startup
+chrome.runtime.onStartup.addListener(loadStateAndTrack);
+loadStateAndTrack();
 
-// Load state from storage and continue tracking
 async function loadStateAndTrack() {
   const data = await chrome.storage.sync.get([
-    "startTime",
+    "isRunning",
     "isOnBreak",
     "breakEndTime",
   ]);
 
-  startTime = data.startTime || Date.now();
-  isOnBreak = data.isOnBreak || false;
-  breakEndTime = data.breakEndTime || null;
+  if (!data.isRunning) return;
 
-  if (isOnBreak) {
+  if (data.isOnBreak) {
+    chrome.alarms.create("checkBreakTime", { periodInMinutes: 1 });
     checkBreakStatus();
   } else {
     startTracking();
   }
 }
 
-// Start tracking work time
 function startTracking() {
   chrome.alarms.create("checkWorkTime", { periodInMinutes: 1 });
 }
 
-// Listen for alarm to check work time
 chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === "checkWorkTime") {
-    checkWorkTime();
-  } else if (alarm.name === "checkBreakTime") {
-    checkBreakStatus();
-  }
+  if (alarm.name === "checkWorkTime") checkWorkTime();
+  if (alarm.name === "checkBreakTime") checkBreakStatus();
 });
 
-// Check if work time has exceeded 45 minutes
 async function checkWorkTime() {
-  const data = await chrome.storage.sync.get(["startTime", "isOnBreak"]);
+  const data = await chrome.storage.sync.get([
+    "startTime",
+    "workDurationMs",
+    "isRunning",
+    "isOnBreak",
+  ]);
 
-  if (data.isOnBreak) return;
+  if (!data.isRunning || data.isOnBreak) return;
 
-  const elapsed = Date.now() - data.startTime;
-
-  if (elapsed >= WORK_TIME) {
+  if (Date.now() - data.startTime >= data.workDurationMs) {
     startBreak();
   }
 }
 
-// Start break period
 async function startBreak() {
-  isOnBreak = true;
-  breakEndTime = Date.now() + BREAK_TIME;
+  const { breakDurationMs } = await chrome.storage.sync.get("breakDurationMs");
+  const breakEndTime = Date.now() + breakDurationMs;
 
   await chrome.storage.sync.set({
     isOnBreak: true,
-    breakEndTime: breakEndTime,
+    breakEndTime,
   });
 
-  // Show banner on all existing tabs
-  const tabs = await chrome.tabs.query({});
-  for (const tab of tabs) {
-    if (
-      tab.url
-      // !tab.url.startsWith("chrome://") &&
-      // !tab.url.startsWith("chrome-extension")
-    ) {
-      chrome.tabs.sendMessage(tab.id, { action: "showBanner" }).catch(() => {});
-    }
-  }
-
-  // Clear work time alarm and start break alarm
   chrome.alarms.clear("checkWorkTime");
   chrome.alarms.create("checkBreakTime", { periodInMinutes: 1 });
-
-  // Block new tabs during break
   chrome.tabs.onCreated.addListener(blockNewTabs);
+
+  const tabs = await chrome.tabs.query({});
+  tabs.forEach((tab) => {
+    if (tab.id && tab.url?.startsWith("http")) {
+      chrome.tabs.sendMessage(tab.id, { action: "showBanner" }).catch(() => {});
+    }
+  });
 }
 
-// Block new tabs during break period
 async function blockNewTabs(tab) {
-  const data = await chrome.storage.sync.get(["isOnBreak"]);
-
-  if (data.isOnBreak) {
-    // Close the new tab
-    chrome.tabs.remove(tab.id);
-  }
+  const { isOnBreak } = await chrome.storage.sync.get("isOnBreak");
+  if (isOnBreak) chrome.tabs.remove(tab.id);
 }
 
-// Check if break time is over
 async function checkBreakStatus() {
-  const data = await chrome.storage.sync.get(["isOnBreak", "breakEndTime"]);
+  const { isOnBreak, breakEndTime } = await chrome.storage.sync.get([
+    "isOnBreak",
+    "breakEndTime",
+  ]);
 
-  if (!data.isOnBreak) return;
-
-  if (Date.now() >= data.breakEndTime) {
-    endBreak();
-  }
+  if (!isOnBreak) return;
+  if (Date.now() >= breakEndTime) endBreak();
 }
 
-// End break period and restart tracking
 async function endBreak() {
-  isOnBreak = false;
-  startTime = Date.now();
-
   await chrome.storage.sync.set({
-    startTime: startTime,
     isOnBreak: false,
     breakEndTime: null,
+    startTime: Date.now(),
   });
 
-  // Remove break listener
-  chrome.tabs.onCreated.removeListener(blockNewTabs);
-
-  // Hide banner on all tabs
-  const tabs = await chrome.tabs.query({});
-  for (const tab of tabs) {
-    if (
-      tab.url &&
-      !tab.url.startsWith("chrome://") &&
-      !tab.url.startsWith("chrome-extension://")
-    ) {
-      chrome.tabs.sendMessage(tab.id, { action: "hideBanner" }).catch(() => {});
-    }
-  }
-
-  // Restart work time tracking
   chrome.alarms.clear("checkBreakTime");
+  chrome.tabs.onCreated.removeListener(blockNewTabs);
   startTracking();
+
+  const tabs = await chrome.tabs.query({});
+  tabs.forEach((tab) => {
+    chrome.tabs.sendMessage(tab.id, { action: "hideBanner" }).catch(() => {});
+  });
 }
 
-// Listen for reset request from popup
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "resetTimer") {
-    resetTimer();
-    sendResponse({ success: true });
-  }
+// Messages
+chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
+  if (req.action === "startTimer") startTimer();
+  if (req.action === "stopTimer") stopTimer();
+  if (req.action === "resetTimer") resetTimer();
 });
 
-// Reset timer function
-async function resetTimer() {
-  // End break if currently on break
-  if (isOnBreak) {
-    await endBreak();
-  }
-
-  // Reset start time
+async function startTimer() {
   await chrome.storage.sync.set({
     startTime: Date.now(),
+    isRunning: true,
+    isOnBreak: false,
+    breakEndTime: null,
+  });
+  startTracking();
+}
+
+async function stopTimer() {
+  chrome.alarms.clearAll();
+  chrome.tabs.onCreated.removeListener(blockNewTabs);
+
+  await chrome.storage.sync.set({
+    isRunning: false,
     isOnBreak: false,
     breakEndTime: null,
   });
 
-  // Restart tracking
-  chrome.alarms.clear("checkWorkTime");
-  chrome.alarms.clear("checkBreakTime");
-  startTracking();
+  const tabs = await chrome.tabs.query({});
+  tabs.forEach((tab) => {
+    chrome.tabs.sendMessage(tab.id, { action: "hideBanner" }).catch(() => {});
+  });
 }
 
-// Initialize on service worker start
-loadStateAndTrack();
+async function resetTimer() {
+  chrome.alarms.clearAll();
+  chrome.tabs.onCreated.removeListener(blockNewTabs);
+
+  await chrome.storage.sync.set({
+    startTime: Date.now(),
+    isRunning: true,
+    isOnBreak: false,
+    breakEndTime: null,
+  });
+
+  // 🔑 Force-hide banner everywhere
+  const tabs = await chrome.tabs.query({});
+  tabs.forEach((tab) => {
+    if (tab.id) {
+      chrome.tabs.sendMessage(tab.id, { action: "hideBanner" }).catch(() => {});
+    }
+  });
+
+  startTracking();
+}

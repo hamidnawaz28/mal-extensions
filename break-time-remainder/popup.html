@@ -67,10 +67,51 @@
         font-weight: bold;
         text-align: center;
       }
+      input[type="number"] {
+        width: 60px;
+        padding: 6px 8px;
+        margin: 0 6px;
+        border-radius: 6px;
+        border: none;
+        outline: none;
+        font-size: 13px;
+        font-weight: bold;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.9);
+        color: #4c3fa5;
+      }
+
+      /* remove arrows (Chrome) */
+      input[type="number"]::-webkit-inner-spin-button,
+      input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      .header {
+        display: flex;
+        align-items: center; /* vertically centers icon with text */
+        gap: 10px; /* space between icon and text */
+        margin-bottom: 15px;
+      }
+
+      .header-icon {
+        width: 28px; /* adjust size */
+        height: 28px;
+        display: inline-block;
+      }
+
+      .header-text {
+        font-size: 20px;
+        font-weight: bold;
+        color: white;
+      }
     </style>
   </head>
   <body>
-    <h2>⏰ Break Time Remainder</h2>
+    <div class="header">
+      <img src="logo.png" alt="Break Icon" class="header-icon" />
+      <span class="header-text"> Break Time Remainder</span>
+    </div>
 
     <div id="breakStatus" class="break-status" style="display: none">
       🛑 BREAK MODE ACTIVE
@@ -82,15 +123,23 @@
     </div>
 
     <div class="info">
-      <p>• Work time: <strong>45 minutes</strong></p>
-      <p>• Break time: <strong>15 minutes</strong></p>
+      <p>
+        • Work time: <input id="workInput" type="number" min="45" />
+        <span>minutes</span>
+      </p>
+      <p>
+        • Break time: <input id="breakInput" type="number" min="15" />
+        <span>minutes</span>
+      </p>
       <p id="breakInfo">A banner will appear when it's time to take a break.</p>
       <p id="blockInfo" style="display: none">
         New tabs are blocked during break.
       </p>
     </div>
 
-    <button id="resetBtn">Reset Timer & Resume Work</button>
+    <button id="startBtn">▶ Start</button>
+    <button id="stopBtn">⏹ Stop</button>
+    <button id="resetBtn">🔄 Reset Timer & Resume Work</button>
 
     <script src="popup.js"></script>
   </body>
