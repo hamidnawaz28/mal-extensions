@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "Break Reminder",
+  "version": "1.0",
+  "description": "Enforces healthy work breaks - shows banner after 45 minutes, blocks new tabs during 15-minute break periods",
+  "permissions": ["tabs", "storage", "alarms", "scripting"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "logo.png",
+      "48": "logo.png",
+      "128": "logo.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["banner.css"],
+      "run_at": "document_start"
+    }
+  ],
+  "icons": {
+    "16": "logo.png",
+    "48": "logo.png",
+    "128": "logo.png"
+  }
+}

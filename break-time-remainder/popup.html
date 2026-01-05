@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      body {
+        width: 320px;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        margin: 0;
+      }
+      h2 {
+        margin: 0 0 15px 0;
+        font-size: 20px;
+      }
+      .status {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+      }
+      .time-display {
+        font-size: 32px;
+        font-weight: bold;
+        text-align: center;
+        margin: 10px 0;
+      }
+      .label {
+        font-size: 14px;
+        opacity: 0.9;
+        margin-bottom: 5px;
+      }
+      .info {
+        font-size: 13px;
+        opacity: 0.8;
+        line-height: 1.5;
+      }
+      .info p {
+        margin: 8px 0;
+      }
+      button {
+        width: 100%;
+        padding: 12px;
+        background: white;
+        color: #667eea;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: background 0.2s;
+      }
+      button:hover {
+        background: #f0f0f0;
+      }
+      button:active {
+        background: #e0e0e0;
+      }
+      .break-status {
+        background: rgba(255, 255, 255, 0.3);
+        padding: 12px;
+        border-radius: 6px;
+        margin-bottom: 15px;
+        font-weight: bold;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>⏰ Break Time Remainder</h2>
+
+    <div id="breakStatus" class="break-status" style="display: none">
+      🛑 BREAK MODE ACTIVE
+    </div>
+
+    <div class="status">
+      <div class="label" id="statusLabel">Time until break:</div>
+      <div class="time-display" id="timeDisplay">--:--</div>
+    </div>
+
+    <div class="info">
+      <p>• Work time: <strong>45 minutes</strong></p>
+      <p>• Break time: <strong>15 minutes</strong></p>
+      <p id="breakInfo">A banner will appear when it's time to take a break.</p>
+      <p id="blockInfo" style="display: none">
+        New tabs are blocked during break.
+      </p>
+    </div>
+
+    <button id="resetBtn">Reset Timer & Resume Work</button>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
