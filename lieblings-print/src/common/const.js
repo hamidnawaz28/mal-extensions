@@ -69,13 +69,12 @@ const ITEM_DETAILS = [
 ]
 
 const FIREBASE_INIT = {
-  apiKey: 'AIzaSyAUk0rUd1BbQb8IA1O9F3G6iY0S6GppNkc',
-  authDomain: 'contentcue-66e03.firebaseapp.com',
-  projectId: 'contentcue-66e03',
-  storageBucket: 'contentcue-66e03.appspot.com',
-  messagingSenderId: '710922429474',
-  appId: '1:710922429474:web:cd32b8263708d1cfb5167b',
-  measurementId: 'G-6CNHC5EY6E',
+  apiKey: 'AIzaSyAV5Db6H4pGLE_yCaKgvktaE2TYyioAHcg',
+  authDomain: 'liebilings-print.firebaseapp.com',
+  projectId: 'liebilings-print',
+  storageBucket: 'liebilings-print.firebasestorage.app',
+  messagingSenderId: '532283669105',
+  appId: '1:532283669105:web:033a8dab29483f768139d0',
 }
 
 const FIREBASE_COLLECTIONS = {

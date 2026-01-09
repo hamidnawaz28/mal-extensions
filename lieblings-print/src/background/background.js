@@ -6,34 +6,8 @@ import {
 } from '../common/browserMethods'
 import { ADD_PRODUCT, MESSAGING, PLACE_ORDER, SYNC_TRACKING_NUMBER } from '../common/const'
 import { asyncSleep, browserRef } from '../common/utils'
-import { app } from '../firebase'
 import { addAnItemId, getAllItemsId } from '../firebase/apis'
 import { getItemData } from './requests'
-
-browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
-  if (msg.action === MESSAGING.GET_EBAY_ITEM_DATA) {
-    const itemData = await getItemData(msg.itemId)
-    return itemData
-  }
-  return true
-})
-
-browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
-  if (msg.action === MESSAGING.ADD_ITEM_DATA) {
-    await app()
-    const itemData = await addAnItemId(msg.itemData.legacyItemId, msg.itemData)
-    return itemData
-  }
-  return true
-})
-
-browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
-  if (msg.action === MESSAGING.GET_ALL_ITEMS_ID) {
-    await app()
-    return await getAllItemsId(msg.itemId)
-  }
-  return true
-})
 
 browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
   if (msg.action === MESSAGING.WAIT_TILL_ACTIVE_TAB_LOADS) {
@@ -61,10 +35,14 @@ browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
 
 browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
   if (msg.action === ADD_PRODUCT.INJECT_ADD_PRODUCT_SCRIPT) {
+    const alreadyAddedItemsId = await getAllItemsId()
     const itemsList = msg.itemsList
-    for (let index = 0; index < itemsList.length; index++) {
-      const item = itemsList[index]
 
+    const existingSet = new Set(alreadyAddedItemsId)
+
+    const newItems = itemsList.filter((item) => !existingSet.has(item.itemId))
+    for (let index = 0; index < newItems.length; index++) {
+      const item = newItems[index]
       const itemData = await getItemData(item.itemId)
       const addProductUrl = 'https://seller-eu.temu.com/goods-category.html'
       const windowTab = await browserRef.windows.create({
@@ -103,6 +81,7 @@ browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
         action: ADD_PRODUCT.ENTER_REMAINING_DETAILS,
         itemData,
       })
+      await addAnItemId(item.itemId, {})
       // await browserRef.windows.remove(windowTab.id)
     }
 

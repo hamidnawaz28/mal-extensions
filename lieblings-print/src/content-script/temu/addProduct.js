@@ -1,4 +1,4 @@
-import { ADD_PRODUCT, ITEM_DESCRIPTION, ITEM_DETAILS, MESSAGING } from '../../common/const'
+import { ADD_PRODUCT, ITEM_DESCRIPTION, ITEM_DETAILS } from '../../common/const'
 import {
   asyncSleep,
   browserRef,
@@ -79,10 +79,7 @@ export const addRemainingDetails = async (itemData) => {
   await selectResponsiblePerson()
   await asyncSleep(2000)
   await uncheckOtherMarketplaces()
-  await browserRef.runtime.sendMessage({
-    action: MESSAGING.ADD_ITEM_DATA,
-    itemData,
-  })
+
   await clickSubmitButton()
   // await asyncSleep(10000)
 }
