@@ -6,12 +6,31 @@ import {
 } from '../common/browserMethods'
 import { ADD_PRODUCT, MESSAGING, PLACE_ORDER, SYNC_TRACKING_NUMBER } from '../common/const'
 import { asyncSleep, browserRef } from '../common/utils'
+import { app } from '../firebase'
+import { addAnItemId, getAllItemsId } from '../firebase/apis'
 import { getItemData } from './requests'
 
 browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
   if (msg.action === MESSAGING.GET_EBAY_ITEM_DATA) {
     const itemData = await getItemData(msg.itemId)
     return itemData
+  }
+  return true
+})
+
+browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
+  if (msg.action === MESSAGING.ADD_ITEM_DATA) {
+    await app()
+    const itemData = await addAnItemId(msg.itemData.legacyItemId, msg.itemData)
+    return itemData
+  }
+  return true
+})
+
+browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
+  if (msg.action === MESSAGING.GET_ALL_ITEMS_ID) {
+    await app()
+    return await getAllItemsId(msg.itemId)
   }
   return true
 })

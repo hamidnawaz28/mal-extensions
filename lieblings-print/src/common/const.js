@@ -2,6 +2,8 @@ const MESSAGING = {
   WAIT_TILL_ACTIVE_TAB_LOADS: 'WAIT_TILL_ACTIVE_TAB_LOADS',
   GET_EBAY_ITEM_DATA: 'GET_EBAY_ITEM_DATA',
   UPDATE_ACTIVE_TAB_URL: 'UPDATE_ACTIVE_TAB_URL',
+  ADD_ITEM_DATA: 'ADD_ITEM_DATA',
+  GET_ALL_ITEMS_ID: 'GET_ALL_ITEMS_ID',
 }
 
 const ADD_PRODUCT = {
@@ -65,6 +67,20 @@ const ITEM_DETAILS = [
   'Eine perfekte Geschenkidee· Pflegeleicht und Spülmaschinenfest Unsere hochwertigen Tassen sind spülmaschinenfest und überzeugen durch die hohe Langlebigkeit. Unser hoher Qualitätsstandard ermöglicht 2500 Spülgänge ohne Verlust der Druckqualität. Dennoch raten wir dazu, die Tassen bevorzugt per Hand abzuwaschen, um die Langlebigkeit des Drucks zu verlängern.',
   'Mit Liebe aus Deutschland Unsere Tassen werden mit viel Liebe zum Detail gestaltet und in sorgfältiger Handarbeit beidseitig bedruckt. Es handelt sich bei den Spruchtassen nicht um reine Dekorationsobjekte, sondern um lebensmittelechte Qualitätsware Made in Germany. Nicht nur der Druck unserer Motive wird in Deutschland ausgeführt, sondern wir versenden unsere Produkte auch von hier aus. Für langlebige Produkte und höchste Kundenzufriedenheit!',
 ]
+
+const FIREBASE_INIT = {
+  apiKey: 'AIzaSyAUk0rUd1BbQb8IA1O9F3G6iY0S6GppNkc',
+  authDomain: 'contentcue-66e03.firebaseapp.com',
+  projectId: 'contentcue-66e03',
+  storageBucket: 'contentcue-66e03.appspot.com',
+  messagingSenderId: '710922429474',
+  appId: '1:710922429474:web:cd32b8263708d1cfb5167b',
+  measurementId: 'G-6CNHC5EY6E',
+}
+
+const FIREBASE_COLLECTIONS = {
+  items: 'items',
+}
 export {
   SYNC_TRACKING_NUMBER,
   MESSAGING,
@@ -73,4 +89,6 @@ export {
   PLACE_ORDER,
   ITEM_DESCRIPTION,
   ITEM_DETAILS,
+  FIREBASE_INIT,
+  FIREBASE_COLLECTIONS,
 }
