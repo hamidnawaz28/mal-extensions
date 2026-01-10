@@ -1,4 +1,5 @@
 import Browser from 'webextension-polyfill'
+import { getLocalStorage, setLocalStorage } from '../../common/browserMethods'
 import { ADD_PRODUCT, MESSAGING } from '../../common/const'
 import { asyncSleep, buttonInstance, checkboxInstance } from '../../common/utils'
 import { getAllItemsId } from '../../firebase/apis'
@@ -48,8 +49,22 @@ async function keepAddingButtons() {
     const getUploadTriggerButton = document.querySelector('#upload-to-temu')
     if (!getUploadTriggerButton) {
       const uploadTriggerButton = buttonInstance('Upload on Temu', 'upload-to-temu')
+      const stopButton = buttonInstance('Stop Uploading', 'stop-upload')
+
       const menuContainer = getMenuContainer()
       menuContainer.appendChild(uploadTriggerButton)
+      menuContainer.appendChild(stopButton)
+      stopButton.addEventListener('click', async () => {
+        await setLocalStorage({
+          running: false,
+        })
+        const ls = await getLocalStorage()
+        const openedTabs = ls?.openedTabs
+        await Browser.runtime.sendMessage({
+          action: MESSAGING.DELETE_TABS,
+          openedTabs,
+        })
+      })
       uploadTriggerButton.addEventListener('click', async () => {
         const items = Array.from(document.querySelectorAll('ul li[data-listingid]'))
         const itemsList = items
@@ -73,6 +88,10 @@ async function keepAddingButtons() {
           alert(`Processing ${newItems.length} remainig items, ${duplicateCount} are duplicate`)
 
         if (newItems.length == 0) return
+        await setLocalStorage({
+          running: true,
+          openedTabs: [],
+        })
         await Browser.runtime.sendMessage({
           action: ADD_PRODUCT.INJECT_ADD_PRODUCT_SCRIPT,
           itemsList: newItems,

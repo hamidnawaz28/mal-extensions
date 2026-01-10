@@ -220,14 +220,6 @@ const addProductDetails = async (itemData) => {
   await asyncSleep(1000)
   writeTextToRef(recommendedRetailPriceRef, '12.95')
   await asyncSleep(1000)
-  const imagesIndex = getNodeIndex(findElementWithText('thead th', 'Bilder'))
-
-  variantDetailsRef[imagesIndex].querySelector("[class^='imgsPopBtn']").click()
-  await asyncSleep(3000)
-  const toAddImagesRef = Array.from(
-    document.querySelectorAll('[data-testid="beast-core-upload"] input'),
-  )
-  await addItemImages(itemData, toAddImagesRef[0])
 
   const addLinkIndex = getNodeIndex(findElementWithText('thead th', 'Referenzlink'))
   const addLinkRef = variantDetailsRef[addLinkIndex]
@@ -237,6 +229,18 @@ const addProductDetails = async (itemData) => {
   writeTextToRef(linkInputRef, `https://www.ebay.com/itm/${itemData.legacyItemId}`)
   await asyncSleep(1000)
   await clickSaveButton()
+  await asyncSleep(1000)
+
+  const imagesIndex = getNodeIndex(findElementWithText('thead th', 'Bilder'))
+
+  variantDetailsRef[imagesIndex].querySelector("[class^='imgsPopBtn']").click()
+  await asyncSleep(3000)
+  const toAddImagesRef = Array.from(
+    document.querySelectorAll('[data-testid="beast-core-upload"] input'),
+  )
+  await addItemImages(itemData, toAddImagesRef[0])
+  await asyncSleep(1000)
+
   await asyncSleep(1000)
 }
 
@@ -308,7 +312,7 @@ const addItemImages = async (itemData, imageRef) => {
     await asyncSleep(5000)
   }
   await clickSaveButton()
-  await asyncSleep(2000)
+  await asyncSleep(3000)
 }
 
 const selectColorVariation = async () => {
