@@ -75,7 +75,7 @@ async function keepAddingButtons() {
         if (newItems.length == 0) return
         await Browser.runtime.sendMessage({
           action: ADD_PRODUCT.INJECT_ADD_PRODUCT_SCRIPT,
-          newItems,
+          itemsList: newItems,
         })
       })
     }
