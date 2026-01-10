@@ -37,6 +37,8 @@ const addInitialDetails = async (itemData, title) => {
 }
 
 export const addRemainingDetails = async (itemData) => {
+  console.log('itemData----', itemData)
+
   // Step 1
   await asyncSleep(1000)
   await clickOnBrandButton()
@@ -79,7 +81,6 @@ export const addRemainingDetails = async (itemData) => {
   await selectResponsiblePerson()
   await asyncSleep(2000)
   await uncheckOtherMarketplaces()
-
   await clickSubmitButton()
   // await asyncSleep(10000)
 }

@@ -1,6 +1,7 @@
 import Browser from 'webextension-polyfill'
 import { ADD_PRODUCT, MESSAGING } from '../../common/const'
 import { asyncSleep, buttonInstance, checkboxInstance } from '../../common/utils'
+import { getAllItemsId } from '../../firebase/apis'
 
 const getMenuContainer = () => {
   const menuContainer = document.querySelector('#menu-container')
@@ -64,10 +65,17 @@ async function keepAddingButtons() {
           return
         }
         console.log('itemsList---', itemsList)
+        const alreadyAddedItemsId = await getAllItemsId()
+        const existingSet = new Set(alreadyAddedItemsId)
+        const newItems = itemsList.filter((item) => !existingSet.has(item.itemId))
+        const duplicateCount = itemsList.length - newItems.length
+        if (duplicateCount != 0)
+          alert(`Processing ${newItems.length} remainig items, ${duplicateCount} are duplicate`)
 
+        if (newItems.length == 0) return
         await Browser.runtime.sendMessage({
           action: ADD_PRODUCT.INJECT_ADD_PRODUCT_SCRIPT,
-          itemsList,
+          newItems,
         })
       })
     }

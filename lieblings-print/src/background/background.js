@@ -6,7 +6,7 @@ import {
 } from '../common/browserMethods'
 import { ADD_PRODUCT, MESSAGING, PLACE_ORDER, SYNC_TRACKING_NUMBER } from '../common/const'
 import { asyncSleep, browserRef } from '../common/utils'
-import { addAnItemId, getAllItemsId } from '../firebase/apis'
+import { addAnItemId } from '../firebase/apis'
 import { getItemData } from './requests'
 
 browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
@@ -35,14 +35,10 @@ browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
 
 browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
   if (msg.action === ADD_PRODUCT.INJECT_ADD_PRODUCT_SCRIPT) {
-    const alreadyAddedItemsId = await getAllItemsId()
     const itemsList = msg.itemsList
 
-    const existingSet = new Set(alreadyAddedItemsId)
-
-    const newItems = itemsList.filter((item) => !existingSet.has(item.itemId))
-    for (let index = 0; index < newItems.length; index++) {
-      const item = newItems[index]
+    for (let index = 0; index < itemsList.length; index++) {
+      const item = itemsList[index]
       const itemData = await getItemData(item.itemId)
       const addProductUrl = 'https://seller-eu.temu.com/goods-category.html'
       const windowTab = await browserRef.windows.create({
