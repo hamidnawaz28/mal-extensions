@@ -50,19 +50,59 @@ async function keepAddingButtons() {
     if (!getUploadTriggerButton) {
       const uploadTriggerButton = buttonInstance('Upload on Temu', 'upload-to-temu')
       const stopButton = buttonInstance('Stop Uploading', 'stop-upload')
+      const sortButton = buttonInstance('Sort', 'sort-items')
 
       const menuContainer = getMenuContainer()
+      menuContainer.appendChild(sortButton)
       menuContainer.appendChild(uploadTriggerButton)
       menuContainer.appendChild(stopButton)
+      sortButton.addEventListener('click', async () => {
+        sortButton.innerText = 'Sorting...'
+        sortButton.disabled = true
+
+        try {
+          const alreadyAddedItemsId = await getAllItemsId()
+          const uploadedSet = new Set(alreadyAddedItemsId)
+
+          const list = document.querySelector('ul.srp-results.srp-list')
+          if (!list) return
+
+          const items = Array.from(list.querySelectorAll('li[data-listingid]'))
+
+          const uploadedItems = []
+          const normalItems = []
+
+          items.forEach((item) => {
+            const itemId = item.getAttribute('data-listingid')
+
+            if (itemId && uploadedSet.has(itemId)) {
+              markAsUploaded(item)
+              uploadedItems.push(item)
+            } else {
+              normalItems.push(item)
+            }
+          })
+          ;[...uploadedItems, ...normalItems].forEach((item) => {
+            list.appendChild(item)
+          })
+        } catch (err) {
+          console.error('Sort failed:', err)
+          alert('Failed to sort uploaded items')
+        } finally {
+          sortButton.innerText = 'Sort'
+          sortButton.disabled = false
+        }
+      })
+
       stopButton.addEventListener('click', async () => {
         await setLocalStorage({
           running: false,
         })
         const ls = await getLocalStorage()
-        const openedTabs = ls?.openedTabs
+        const openedWindows = ls?.openedWindows
         await Browser.runtime.sendMessage({
-          action: MESSAGING.DELETE_TABS,
-          openedTabs,
+          action: MESSAGING.DELETE_WINDOWS,
+          openedWindows,
         })
       })
       uploadTriggerButton.addEventListener('click', async () => {
@@ -90,7 +130,7 @@ async function keepAddingButtons() {
         if (newItems.length == 0) return
         await setLocalStorage({
           running: true,
-          openedTabs: [],
+          openedWindows: [],
         })
         await Browser.runtime.sendMessage({
           action: ADD_PRODUCT.INJECT_ADD_PRODUCT_SCRIPT,
@@ -110,6 +150,22 @@ async function keepAddingButtons() {
       }
     })
   }, 1000)
+}
+const markAsUploaded = (item) => {
+  if (!item || item.querySelector('.uploaded-label')) return
+
+  const label = document.createElement('span')
+  label.innerText = 'Uploaded'
+  label.className = 'uploaded-label'
+
+  Object.assign(label.style, {
+    marginLeft: '6px',
+    fontSize: '11px',
+    color: '#2ecc71',
+    fontWeight: 'bold',
+  })
+
+  item.appendChild(label)
 }
 
 keepAddingButtons()

@@ -1,4 +1,5 @@
 import {
+  closeWindowIfExists,
   getLocalStorage,
   setLocalStorage,
   updateActiveTabUrl,
@@ -26,8 +27,11 @@ browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
   }
 })
 browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
-  if (msg.action === MESSAGING.DELETE_TABS) {
-    await browserRef.tabs.remove(msg.openedTabs)
+  if (msg.action === MESSAGING.DELETE_WINDOWS) {
+    const openedWindows = msg?.openedWindows ?? []
+    for (let index = 0; index < openedWindows.length; index++) {
+      await closeWindowIfExists(openedWindows[index])
+    }
     sendResponse({})
     return true
   }
@@ -40,6 +44,12 @@ browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
   }
 })
 
+const closeOpenWindows = async (openedWindows) => {
+  await asyncSleep(20000)
+  for (let index = 0; index < openedWindows.length; index++) {
+    await closeWindowIfExists(openedWindows[index])
+  }
+}
 browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
   if (msg.action === ADD_PRODUCT.INJECT_ADD_PRODUCT_SCRIPT) {
     const itemsList = msg.itemsList
@@ -60,10 +70,12 @@ browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
 
         const tabId = windowTab.tabs[0].id
         const ls = await getLocalStorage()
-        const openedTabs = ls?.openedTabs ?? []
-        openedTabs.push(tabId)
+        const openedWindows = ls?.openedWindows ?? []
+        const oldWindows = openedWindows.filter((id) => id !== windowTab.id)
+        closeOpenWindows(oldWindows)
+        openedWindows.push(windowTab.id)
         await setLocalStorage({
-          openedTabs,
+          openedWindows,
         })
         await browserRef.scripting.executeScript({
           target: { tabId },
@@ -142,7 +154,7 @@ browserRef.runtime.onInstalled.addListener((details) => {
   setLocalStorage({
     isAuthenticated: false,
     running: false,
-    openedTabs: [],
+    openedWindows: [],
   })
 })
 
