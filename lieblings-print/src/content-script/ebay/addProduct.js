@@ -35,12 +35,23 @@ async function keepAddingButtons() {
       selectAllCheckbox.addEventListener('click', async () => {
         const isMainChecked = selectAllCheckbox.querySelector('input').checked
 
-        document.querySelectorAll('.select-checkbox').forEach((item) => {
-          if (!item.checked && isMainChecked) {
-            item.click()
-          }
-          if (item.checked && !isMainChecked) {
-            item.click()
+        const alreadyAddedItemsId = await getAllItemsId()
+        const uploadedSet = new Set(alreadyAddedItemsId)
+
+        document.querySelectorAll('.srp-results li[data-listingid]').forEach((li) => {
+          const itemId = li.getAttribute('data-listingid')
+          const checkbox = li.querySelector('input.select-checkbox')
+
+          if (!checkbox || !itemId) return
+
+          if (!uploadedSet.has(itemId)) {
+            if (isMainChecked && !checkbox.checked) {
+              checkbox.click()
+            }
+
+            if (!isMainChecked && checkbox.checked) {
+              checkbox.click()
+            }
           }
         })
       })
