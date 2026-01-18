@@ -342,7 +342,7 @@ const dropDownSelect = async (label, optionText) => {
 
 const selectContact = async () => {
   const materialElement = findElementWithText(
-    "p[class^='itemTitle']",
+    '[data-testid="beast-core-grid-col-wrapper"]',
     '*Lippen- und Felgenkontakt',
   ).parentElement.querySelector('input')
   materialElement.click()
