@@ -54,62 +54,58 @@ browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
   if (msg.action === ADD_PRODUCT.INJECT_ADD_PRODUCT_SCRIPT) {
     const itemsList = msg.itemsList
     for (let index = 0; index < itemsList.length; index++) {
-      const ls = await getLocalStorage()
+      let ls = await getLocalStorage()
       if (!ls.running) {
         break
       }
-      try {
-        const item = itemsList[index]
-        const itemData = await getItemData(item.itemId)
-        const addProductUrl = 'https://seller-eu.temu.com/goods-category.html'
-        const windowTab = await browserRef.windows.create({
-          url: addProductUrl,
-          type: 'popup',
-          state: 'maximized',
-        })
+      const item = itemsList[index]
+      const itemData = await getItemData(item.itemId)
+      const addProductUrl = 'https://seller-eu.temu.com/goods-category.html'
+      const windowTab = await browserRef.windows.create({
+        url: addProductUrl,
+        type: 'popup',
+        state: 'maximized',
+      })
 
-        const tabId = windowTab.tabs[0].id
-        const ls = await getLocalStorage()
-        const openedWindows = ls?.openedWindows ?? []
-        const oldWindows = openedWindows.filter((id) => id !== windowTab.id)
-        closeOpenWindows(oldWindows)
-        openedWindows.push(windowTab.id)
-        await setLocalStorage({
-          openedWindows,
-        })
-        await browserRef.scripting.executeScript({
-          target: { tabId },
-          files: ['addProductTemu.js'],
-        })
-        await asyncSleep(2000)
+      const tabId = windowTab.tabs[0].id
+      ls = await getLocalStorage()
+      const openedWindows = ls?.openedWindows ?? []
+      const oldWindows = openedWindows.filter((id) => id !== windowTab.id)
+      closeOpenWindows(oldWindows)
+      openedWindows.push(windowTab.id)
+      await setLocalStorage({
+        openedWindows,
+      })
+      await browserRef.scripting.executeScript({
+        target: { tabId },
+        files: ['addProductTemu.js'],
+      })
+      await asyncSleep(2000)
 
-        await browserRef.tabs.sendMessage(tabId, {
-          action: ADD_PRODUCT.ENTER_INITIAL_DETAILS,
-          itemData: itemData,
-          title: item.title,
-        })
+      await browserRef.tabs.sendMessage(tabId, {
+        action: ADD_PRODUCT.ENTER_INITIAL_DETAILS,
+        itemData: itemData,
+        title: item.title,
+      })
 
-        browserRef.tabs.sendMessage(tabId, {
-          action: ADD_PRODUCT.CLICK_ON_NEXT_BUTTON,
-        })
+      browserRef.tabs.sendMessage(tabId, {
+        action: ADD_PRODUCT.CLICK_ON_NEXT_BUTTON,
+      })
 
-        await waitTillTabLoads(tabId)
+      await waitTillTabLoads(tabId)
 
-        await asyncSleep(5000)
-        await browserRef.scripting.executeScript({
-          target: { tabId },
-          files: ['addProductTemu.js'],
-        })
+      await asyncSleep(5000)
+      await browserRef.scripting.executeScript({
+        target: { tabId },
+        files: ['addProductTemu.js'],
+      })
 
-        await browserRef.tabs.sendMessage(tabId, {
-          action: ADD_PRODUCT.ENTER_REMAINING_DETAILS,
-          itemData,
-        })
-        await addAnItemId(item.itemId, {})
-        // await browserRef.windows.remove(windowTab.id)
-      } catch (err) {
-        console.log('err-----', err)
-      }
+      await browserRef.tabs.sendMessage(tabId, {
+        action: ADD_PRODUCT.ENTER_REMAINING_DETAILS,
+        itemData,
+      })
+      await addAnItemId(item.itemId, {})
+      // await browserRef.windows.remove(windowTab.id)
     }
 
     sendResponse({})

@@ -126,7 +126,7 @@ const selectHandlingTime = async () => {
 const addProductSku = async (itemData) => {
   const handlingTimeRef = findElementWithText(
     '[data-testid="beast-core-grid-col-wrapper"]',
-    'Beitrags-SKU',
+    'Beitragswaren',
   ).parentElement
   const inputRef = handlingTimeRef.querySelector('input')
   inputRef.click()
