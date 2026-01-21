@@ -4,6 +4,17 @@ import { ADD_PRODUCT, MESSAGING } from '../../common/const'
 import { asyncSleep, buttonInstance, checkboxInstance } from '../../common/utils'
 import { getAllItemsId } from '../../firebase/apis'
 
+const getAllLists = () => {
+  const listRef = document.querySelector('ul.srp-results.srp-list')
+  return (
+    Array.from(listRef.querySelectorAll('ul li[data-listingid]'))?.filter((item) =>
+      item
+        .querySelector('.su-styled-text.primary.default')
+        ?.innerText.toLowerCase()
+        ?.includes('tasse'),
+    ) ?? []
+  )
+}
 const getMenuContainer = () => {
   const menuContainer = document.querySelector('#menu-container')
   if (menuContainer) return menuContainer
@@ -37,8 +48,8 @@ async function keepAddingButtons() {
 
         const alreadyAddedItemsId = await getAllItemsId()
         const uploadedSet = new Set(alreadyAddedItemsId)
-
-        document.querySelectorAll('.srp-results li[data-listingid]').forEach((li) => {
+        const items = getAllLists()
+        items.forEach((li) => {
           const itemId = li.getAttribute('data-listingid')
           const checkbox = li.querySelector('input.select-checkbox')
 
@@ -74,11 +85,9 @@ async function keepAddingButtons() {
         try {
           const alreadyAddedItemsId = await getAllItemsId()
           const uploadedSet = new Set(alreadyAddedItemsId)
-
           const list = document.querySelector('ul.srp-results.srp-list')
           if (!list) return
-
-          const items = Array.from(list.querySelectorAll('li[data-listingid]'))
+          const items = getAllLists()
 
           const uploadedItems = []
           const normalItems = []
@@ -117,7 +126,7 @@ async function keepAddingButtons() {
         })
       })
       uploadTriggerButton.addEventListener('click', async () => {
-        const items = Array.from(document.querySelectorAll('ul li[data-listingid]'))
+        const items = getAllLists()
         const itemsList = items
           .filter((item) => item.querySelector('.select-checkbox')?.checked)
           .map((item) => {
@@ -150,7 +159,7 @@ async function keepAddingButtons() {
       })
     }
 
-    const items = Array.from(document.querySelectorAll('ul li[data-listingid]'))
+    const items = getAllLists()
     items.forEach((item) => {
       const itemId = item.dataset.listingid
       const selectCheckBox = item.querySelector('.select-checkbox')
