@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
   "name": "__MSG_appName__",
-  "description": "It allows user to see the ebay sold history, copy amazon order details and place amazon order",
+  "description": "It allows user to download all product images from an AliExpress product page with a single click.",
   "default_locale": "en",
-  "version": "0.07",
+  "version": "0.02",
   "action": {
     "default_icon": {
       "16": "logo.png",

@@ -6,7 +6,7 @@ import { asyncSleep, downloadImages, getDescriptionImages } from '../common/util
 function ResponseContainer() {
   const [loading, setLoading] = useState(false)
 
-  const downloadImagesHandle = async (includeDescriptionImages = false) => {
+  const downloadImagesHandle = async (includeDescriptionImages = false, includeVideos = false) => {
     setLoading(true)
     let descriptionImages = []
     const fileNameRef = document.querySelector("[data-pl='product-title']") as HTMLElement
@@ -32,18 +32,25 @@ function ResponseContainer() {
       .map((el) => el.src)
       .filter((el) => el.includes('.jpg'))
       .map((el) => el.replace(/(\.jpg).*$/, '$1'))
+    let videoSources = []
+    if (includeVideos) {
+      videoSources = getVideosSources()
+    }
 
-    await downloadImages([...allSrcs, ...descriptionImages], fileName)
+    await downloadImages([...allSrcs, ...descriptionImages, ...videoSources], fileName)
     setLoading(false)
   }
-
+  const getVideosSources = () => {
+    const videoSourcesRef = Array.from(document.querySelectorAll('video source')) as any[]
+    return videoSourcesRef.map((el) => el?.src)
+  }
   return (
     <Box sx={{ display: 'flex', flexDirection: 'row', gap: '8px', marginTop: '8px' }}>
       <Button
         size="small"
         variant="contained"
         endIcon={<DownloadIcon />}
-        onClick={() => downloadImagesHandle(false)}
+        onClick={() => downloadImagesHandle(false, false)}
         loading={loading}
         loadingIndicator="Downloading..."
         sx={{ backgroundColor: '#6dcbbd', fontSize: '10px' }}
@@ -54,13 +61,26 @@ function ResponseContainer() {
         size="small"
         variant="contained"
         endIcon={<DownloadIcon />}
-        onClick={() => downloadImagesHandle(true)}
+        onClick={() => downloadImagesHandle(true, false)}
         loading={loading}
         loadingIndicator="Downloading..."
         sx={{ backgroundColor: '#6dcbbd', fontSize: '10px' }}
       >
         Download With Des. Images
       </Button>
+      {getVideosSources().length > 0 && (
+        <Button
+          size="small"
+          variant="contained"
+          endIcon={<DownloadIcon />}
+          onClick={() => downloadImagesHandle(true, true)}
+          loading={loading}
+          loadingIndicator="Downloading..."
+          sx={{ backgroundColor: '#6dcbbd', fontSize: '10px' }}
+        >
+          All With Videos
+        </Button>
+      )}
     </Box>
   )
 }

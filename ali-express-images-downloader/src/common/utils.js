@@ -31,17 +31,22 @@ export async function downloadImages(allImages, fileName) {
   const dt = new DataTransfer()
   for (let imageIndex = 0; imageIndex < allImages.length; imageIndex++) {
     const imageUrl = allImages[imageIndex]
-    const image = await urlToFile(imageUrl)
+    const image = await urlToFile(imageUrl, imageIndex)
     dt.items.add(image)
   }
   await downloadDataTransferFiles(dt, fileName)
 }
 
-async function urlToFile(imageUrl) {
-  const res = await fetch(imageUrl)
+async function urlToFile(url, index) {
+  const res = await fetch(url)
   const blob = await res.blob()
 
-  return await new File([blob], `${Date.now()}.jpg`, { type: blob.type || 'image/jpeg' })
+  const ext = blob.type.split('/')[1] || 'bin'
+  const isVideo = blob.type.startsWith('video')
+
+  const fileName = isVideo ? `video-${index + 1}.${ext}` : `image-${index + 1}.${ext}`
+
+  return new File([blob], fileName, { type: blob.type })
 }
 
 async function downloadDataTransferFiles(dt, fileName) {
