@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "__MSG_appName__",
+  "description": "It allows user to see the ebay sold history, copy amazon order details and place amazon order",
+  "default_locale": "en",
+  "version": "0.07",
+  "action": {
+    "default_icon": {
+      "16": "logo.png",
+      "32": "logo.png",
+      "48": "logo.png",
+      "128": "logo.png"
+    },
+    "default_title": "__MSG_appName__"
+  },
+  "permissions": ["tabs", "activeTab", "storage"],
+
+  "icons": {
+    "16": "logo.png",
+    "32": "logo.png",
+    "48": "logo.png",
+    "128": "logo.png"
+  },
+
+  "content_scripts": [
+    {
+      "run_at": "document_end",
+      "matches": ["https://*.aliexpress.us/item/*", "https://*.aliexpress.com/item/*"],
+      "js": ["content-script-aliexpress.js"]
+    }
+  ],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  }
+}
