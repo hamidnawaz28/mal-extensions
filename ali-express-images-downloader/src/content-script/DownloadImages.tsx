@@ -6,22 +6,22 @@ import { asyncSleep, downloadImages, getDescriptionImages } from '../common/util
 function ResponseContainer() {
   const [loading, setLoading] = useState(false)
 
-  const downloadImagesHandle = async () => {
+  const downloadImagesHandle = async (includeDescriptionImages = false) => {
     setLoading(true)
-
-    const specRef = document.querySelector('#nav-description')
-    specRef?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'center',
-    })
-    await asyncSleep(2000)
-    const specButtonRef = document.querySelector('#nav-description button') as HTMLElement
-    specButtonRef?.click()
-    await asyncSleep(2000)
+    let descriptionImages = []
+    const fileNameRef = document.querySelector("[data-pl='product-title']") as HTMLElement
+    if (includeDescriptionImages) {
+      const descriptionRef = document.querySelector("a[title='Description']") as HTMLElement
+      descriptionRef.click()
+      await asyncSleep(2000)
+      descriptionImages = getDescriptionImages()
+      fileNameRef?.scrollIntoView({
+        behavior: 'smooth',
+      })
+    }
     const allImages = document.querySelectorAll(
       "[class^='main-image--wrap'] img",
     ) as NodeListOf<HTMLImageElement>
-    const fileNameRef = document.querySelector("[data-pl='product-title']") as HTMLElement
     const fileName = fileNameRef?.innerText
       ?.trim()
       ?.replaceAll(' ', '-')
@@ -32,7 +32,7 @@ function ResponseContainer() {
       .map((el) => el.src)
       .filter((el) => el.includes('.jpg'))
       .map((el) => el.replace(/(\.jpg).*$/, '$1'))
-    const descriptionImages = getDescriptionImages()
+
     await downloadImages([...allSrcs, ...descriptionImages], fileName)
     setLoading(false)
   }
@@ -43,12 +43,23 @@ function ResponseContainer() {
         size="small"
         variant="contained"
         endIcon={<DownloadIcon />}
-        onClick={downloadImagesHandle}
+        onClick={() => downloadImagesHandle(false)}
         loading={loading}
         loadingIndicator="Downloading..."
-        sx={{ backgroundColor: '#6dcbbd' }}
+        sx={{ backgroundColor: '#6dcbbd', fontSize: '10px' }}
       >
         Download Images
+      </Button>
+      <Button
+        size="small"
+        variant="contained"
+        endIcon={<DownloadIcon />}
+        onClick={() => downloadImagesHandle(true)}
+        loading={loading}
+        loadingIndicator="Downloading..."
+        sx={{ backgroundColor: '#6dcbbd', fontSize: '10px' }}
+      >
+        Download With Des. Images
       </Button>
     </Box>
   )
