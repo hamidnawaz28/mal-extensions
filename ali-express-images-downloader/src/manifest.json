@@ -3,7 +3,7 @@
   "name": "__MSG_appName__",
   "description": "It allows user to download all product images and videos from an AliExpress product page with a single click.",
   "default_locale": "en",
-  "version": "0.02",
+  "version": "0.03",
   "action": {
     "default_icon": {
       "16": "logo.png",

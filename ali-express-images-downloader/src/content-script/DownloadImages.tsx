@@ -19,12 +19,12 @@ function ResponseContainer() {
     setLoading(false)
   }
   const extractDescriptionImages = async (): Promise<string[]> => {
-    const fileNameRef = document.querySelector("[data-pl='product-title']") as HTMLElement
     const descriptionRef = document.querySelector("a[title='Description']") as HTMLElement
     descriptionRef.click()
     await asyncSleep(2000)
     const descriptionImages = getDescriptionImages()
-    fileNameRef?.parentElement?.scrollIntoView({
+    window.scrollTo({
+      top: 0,
       behavior: 'smooth',
     })
     return descriptionImages ?? []
