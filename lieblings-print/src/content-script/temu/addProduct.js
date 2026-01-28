@@ -54,17 +54,21 @@ export const addRemainingDetails = async (itemData) => {
   await clickNextButton()
 
   // Step 2
+  await asyncSleep(2000)
   await dropDownSelect('*Material', 'Keramik')
   await asyncSleep(2000)
   await selectContact()
   await clickNextButton()
   // Step 2
+  await asyncSleep(2000)
   await selectColorVariation()
+  await asyncSleep(2000)
   await addProductDetails(itemData)
   await clickNextButton()
   await asyncSleep(2000)
   // Step 3
   await selectHandlingTime()
+  await asyncSleep(2000)
   await addProductSku(itemData)
   await clickNextButton()
   await asyncSleep(2000)
@@ -78,9 +82,11 @@ export const addRemainingDetails = async (itemData) => {
   await addProductIdentification(itemData)
   await asyncSleep(2000)
   await selectCountryOfOrigin()
+  await asyncSleep(2000)
   await selectResponsiblePerson()
   await asyncSleep(2000)
   await uncheckOtherMarketplaces()
+  await asyncSleep(1000)
   await clickSubmitButton()
   // await asyncSleep(10000)
 }
@@ -200,13 +206,13 @@ const addProductDetails = async (itemData) => {
     variantDetailsRef[sellerFullfillmentQuatityIndex].querySelector('input')
   writeTextToRef(sellerFullfillmentQuatityRef, 1000)
   await addWeight(itemData, variantDetailsRef)
+  await asyncSleep(1000)
   await addDimensions(itemData, variantDetailsRef)
-
+  await asyncSleep(1000)
   const basePriceIndex = getNodeIndex(
     findElementWithIncludeText('thead th', 'Basispreis direkt festlegen'),
   )
   const basePriceRef = variantDetailsRef[basePriceIndex].querySelector('input')
-
   await asyncSleep(1000)
   writeTextToRef(basePriceRef, '12.95')
   basePriceRef.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))
@@ -227,7 +233,7 @@ const addProductDetails = async (itemData) => {
   await asyncSleep(2000)
   const linkInputRef = document.querySelector("[class^='provideUrl2PriceModalTextArea'] textarea")
   writeTextToRef(linkInputRef, `https://www.ebay.com/itm/${itemData.legacyItemId}`)
-  await asyncSleep(1000)
+  await asyncSleep(2000)
   await clickSaveButton()
   await asyncSleep(1000)
 
@@ -239,9 +245,7 @@ const addProductDetails = async (itemData) => {
     document.querySelectorAll('[data-testid="beast-core-upload"] input'),
   )
   await addItemImages(itemData, toAddImagesRef[0])
-  await asyncSleep(1000)
-
-  await asyncSleep(1000)
+  await asyncSleep(3000)
 }
 
 const addWeight = async (itemData, variantDetailsRef) => {
@@ -379,17 +383,12 @@ const addProductDescription = async (itemData) => {
 const clickNextButton = async () => {
   const nextBtn = findElementWithText("[role='button'] div", 'Weiter')
   nextBtn?.click()
-  await asyncSleep(4000)
+  await asyncSleep(7000)
 }
 const clickSubmitButton = async () => {
   const nextBtn = findElementWithText("[role='button'] div", 'Absenden')
   nextBtn?.click()
   await asyncSleep(1000)
-  nextBtn?.click()
-  await asyncSleep(1000)
-}
-const clickCancelButton = async () => {
-  const nextBtn = findElementWithText("[role='button'] div", 'Cancel')
   nextBtn?.click()
   await asyncSleep(1000)
 }

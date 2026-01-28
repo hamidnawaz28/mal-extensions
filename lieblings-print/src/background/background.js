@@ -115,7 +115,7 @@ browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
         const randomErrorCount = ls?.randomErrorCount ?? 0
         console.log(randomErrorCount, 'randomErrorCount----')
 
-        if (randomErrorCount >= 5) {
+        if (randomErrorCount >= 100) {
           await setLocalStorage({
             running: false,
           })
