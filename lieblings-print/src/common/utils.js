@@ -189,6 +189,55 @@ const buttonInstance = (title, id, style = {}) => {
   return btn
 }
 
+const uploadFileInstance = () => {
+  // Hidden file input
+  const fileInput = document.createElement('input')
+  fileInput.type = 'file'
+  fileInput.id = 'csvFile'
+  fileInput.accept = '.csv'
+  fileInput.style.display = 'none'
+
+  // Styled label
+  const fileLabel = document.createElement('label')
+  fileLabel.setAttribute('for', 'csvFile')
+  fileLabel.innerText = 'Upload CSV'
+
+  const labelStyle = {
+    padding: '4px 8px',
+    border: 'none',
+    margin: '8px',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontSize: '12px',
+    fontWeight: '600',
+    color: '#fff',
+    background: 'linear-gradient(135deg, #FF6A00, #EE0979)',
+    boxShadow: '0 4px 10px rgba(0,0,0,0.15)',
+    transition: 'all 0.25s ease',
+    display: 'inline-block',
+    width: 'max-content',
+  }
+
+  Object.assign(fileLabel.style, labelStyle)
+
+  fileLabel.onmouseenter = () => {
+    fileLabel.style.transform = 'scale(1.06)'
+    fileLabel.style.boxShadow = '0 6px 16px rgba(0,0,0,0.25)'
+  }
+
+  fileLabel.onmouseleave = () => {
+    fileLabel.style.transform = 'scale(1)'
+    fileLabel.style.boxShadow = '0 4px 10px rgba(0,0,0,0.15)'
+  }
+
+  // Wrapper to return both elements cleanly
+  const wrapper = document.createElement('div')
+  wrapper.appendChild(fileLabel)
+  wrapper.appendChild(fileInput)
+
+  return { wrapper, fileInput }
+}
+
 const checkboxInstance = (labelText, className, style = {}) => {
   const wrapper = document.createElement('label')
   wrapper.style.display = 'inline-flex'
@@ -329,6 +378,50 @@ const divInstance = (id, style = {}, content = null) => {
 
   return div
 }
+
+function getCsvData(uploadEvent) {
+  const file = uploadEvent.target.files[0]
+  if (!file) return
+
+  const reader = new FileReader()
+
+  reader.onload = function (event) {
+    const csvText = event.target.result
+    const result = parseCSV(csvText)
+
+    console.log('Headers:', result.headers)
+    console.log('Rows:', result.rows)
+  }
+
+  reader.readAsText(file)
+}
+
+const parseCSV = (csvText) => {
+  const delimiter = csvText.includes(';') ? ';' : ','
+
+  const lines = csvText.trim().split('\n')
+  const headers = lines[0].split(delimiter).map((h) => h.trim())
+
+  const rows = lines.slice(1).map((line) => {
+    const values = line.split(delimiter)
+    const row = {}
+
+    headers.forEach((h, i) => {
+      row[h] = cleanValue(values[i] || '')
+    })
+
+    return row
+  })
+
+  return { headers, rows }
+}
+
+const cleanValue = (value = '') => {
+  return value
+    .trim()
+    .replace(/^"(.*)"$/, '$1') // remove surrounding quotes
+    .replace(/\\"/g, '"') // unescape quotes
+}
 export {
   inputInstance,
   checkboxInstance,
@@ -348,4 +441,6 @@ export {
   urlToFile,
   divInstance,
   parseDescription,
+  getCsvData,
+  uploadFileInstance,
 }

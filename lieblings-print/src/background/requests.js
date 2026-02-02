@@ -128,6 +128,7 @@ export const getItemData = async (itemId) => {
     url: `${EBAY.API_BASE_URL}buy/browse/v1/item/v1|${itemId}|0?Content-Type=application/json`,
     headers: {
       Authorization: `Bearer ${accessToken}`,
+      'X-EBAY-C-MARKETPLACE-ID': 'EBAY_DE',
     },
   }
 

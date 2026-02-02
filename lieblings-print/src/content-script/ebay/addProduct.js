@@ -1,7 +1,13 @@
 import Browser from 'webextension-polyfill'
 import { getLocalStorage, setLocalStorage } from '../../common/browserMethods'
 import { ADD_PRODUCT, MESSAGING } from '../../common/const'
-import { asyncSleep, buttonInstance, checkboxInstance } from '../../common/utils'
+import {
+  asyncSleep,
+  buttonInstance,
+  checkboxInstance,
+  getCsvData,
+  uploadFileInstance,
+} from '../../common/utils'
 import { getAllItemsId } from '../../firebase/apis'
 
 const getAllLists = () => {
@@ -73,11 +79,17 @@ async function keepAddingButtons() {
       const uploadTriggerButton = buttonInstance('Upload on Temu', 'upload-to-temu')
       const stopButton = buttonInstance('Stop Uploading', 'stop-upload')
       const sortButton = buttonInstance('Sort', 'sort-items')
+      const uploadFile = uploadFileInstance()
 
       const menuContainer = getMenuContainer()
       menuContainer.appendChild(sortButton)
       menuContainer.appendChild(uploadTriggerButton)
       menuContainer.appendChild(stopButton)
+      menuContainer.appendChild(uploadFile.wrapper)
+      uploadFile.fileInput.addEventListener('change', function (e) {
+        const data = getCsvData(e)
+        console.log(data)
+      })
       sortButton.addEventListener('click', async () => {
         sortButton.innerText = 'Sorting...'
         sortButton.disabled = true

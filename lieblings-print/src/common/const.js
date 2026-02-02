@@ -80,6 +80,7 @@ const FIREBASE_INIT = {
 
 const FIREBASE_COLLECTIONS = {
   items: 'items',
+  collected_items:"collected_items"
 }
 export {
   SYNC_TRACKING_NUMBER,
