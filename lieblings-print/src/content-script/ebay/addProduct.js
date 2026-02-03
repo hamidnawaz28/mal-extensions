@@ -86,9 +86,23 @@ async function keepAddingButtons() {
       menuContainer.appendChild(uploadTriggerButton)
       menuContainer.appendChild(stopButton)
       menuContainer.appendChild(uploadFile.wrapper)
-      uploadFile.fileInput.addEventListener('change', function (e) {
-        const data = getCsvData(e)
+      uploadFile.fileInput.addEventListener('change', async function (e) {
+        const data = await getCsvData(e)
+        uploadFile.fileInput.value = ''
+        uploadFile.fileLabel.innerText = `Bulk Upload CSV (${data.rows.length})`
         console.log(data)
+        const items = data.rows
+        console.log('Total items---', items.length)
+
+        const itemsList = items
+          .filter((item) => item['Title'].toLowerCase().includes('tasse'))
+          .map((item) => {
+            return {
+              itemId: item['Item number'],
+            }
+          })
+        console.log('Total cup items---', itemsList.length)
+        await uploadItems(itemsList)
       })
       sortButton.addEventListener('click', async () => {
         sortButton.innerText = 'Sorting...'
@@ -147,27 +161,7 @@ async function keepAddingButtons() {
               title: item.querySelector('.su-styled-text.primary.default').innerText,
             }
           })
-        if (itemsList.length == 0) {
-          alert('Select an item to upload')
-          return
-        }
-        console.log('itemsList---', itemsList)
-        const alreadyAddedItemsId = await getAllItemsId()
-        const existingSet = new Set(alreadyAddedItemsId)
-        const newItems = itemsList.filter((item) => !existingSet.has(item.itemId))
-        const duplicateCount = itemsList.length - newItems.length
-        if (duplicateCount != 0)
-          alert(`Processing ${newItems.length} remainig items, ${duplicateCount} are duplicate`)
-
-        if (newItems.length == 0) return
-        await setLocalStorage({
-          running: true,
-          openedWindows: [],
-        })
-        await Browser.runtime.sendMessage({
-          action: ADD_PRODUCT.INJECT_ADD_PRODUCT_SCRIPT,
-          itemsList: newItems,
-        })
+        await uploadItems(itemsList)
       })
     }
 
@@ -183,6 +177,30 @@ async function keepAddingButtons() {
     })
   }, 1000)
 }
+const uploadItems = async (itemsList) => {
+  if (itemsList.length == 0) {
+    alert('Select/Upload an item to upload')
+    return
+  }
+  console.log('itemsList---', itemsList)
+  const alreadyAddedItemsId = await getAllItemsId()
+  const existingSet = new Set(alreadyAddedItemsId)
+  const newItems = itemsList.filter((item) => !existingSet.has(item.itemId))
+  const duplicateCount = itemsList.length - newItems.length
+  if (duplicateCount != 0)
+    alert(`Processing ${newItems.length} remainig items, ${duplicateCount} already uploaded`)
+
+  if (newItems.length == 0) return
+  await setLocalStorage({
+    running: true,
+    openedWindows: [],
+  })
+  await Browser.runtime.sendMessage({
+    action: ADD_PRODUCT.INJECT_ADD_PRODUCT_SCRIPT,
+    itemsList: newItems,
+  })
+}
+
 const markAsUploaded = (item) => {
   if (!item || item.querySelector('.uploaded-label')) return
 

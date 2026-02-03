@@ -89,7 +89,6 @@ browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
         await browserRef.tabs.sendMessage(tabId, {
           action: ADD_PRODUCT.ENTER_INITIAL_DETAILS,
           itemData: itemData,
-          title: item.title,
         })
 
         browserRef.tabs.sendMessage(tabId, {

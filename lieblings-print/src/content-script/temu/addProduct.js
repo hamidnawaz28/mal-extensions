@@ -15,7 +15,7 @@ const DEFAULT_CUP_WEIGHT_GRAMS = 330
 
 browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
   if (msg.action === ADD_PRODUCT.ENTER_INITIAL_DETAILS) {
-    await addInitialDetails(msg.itemData, msg.title)
+    await addInitialDetails(msg.itemData)
     sendResponse({})
   }
   if (msg.action === ADD_PRODUCT.CLICK_ON_NEXT_BUTTON) {
@@ -30,9 +30,9 @@ browserRef.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
   return true
 })
 
-const addInitialDetails = async (itemData, title) => {
+const addInitialDetails = async (itemData) => {
   await asyncSleep(2000)
-  await writeTitle(title)
+  await writeTitle(itemData.title)
   await selectCategory()
 }
 

@@ -200,7 +200,7 @@ const uploadFileInstance = () => {
   // Styled label
   const fileLabel = document.createElement('label')
   fileLabel.setAttribute('for', 'csvFile')
-  fileLabel.innerText = 'Upload CSV'
+  fileLabel.innerText = 'Bulk Upload CSV'
 
   const labelStyle = {
     padding: '4px 8px',
@@ -235,7 +235,7 @@ const uploadFileInstance = () => {
   wrapper.appendChild(fileLabel)
   wrapper.appendChild(fileInput)
 
-  return { wrapper, fileInput }
+  return { wrapper, fileInput, fileLabel }
 }
 
 const checkboxInstance = (labelText, className, style = {}) => {
@@ -379,21 +379,28 @@ const divInstance = (id, style = {}, content = null) => {
   return div
 }
 
-function getCsvData(uploadEvent) {
-  const file = uploadEvent.target.files[0]
-  if (!file) return
+async function getCsvData(uploadEvent) {
+  try {
+    const file = uploadEvent.target.files[0]
+    if (!file) return
 
-  const reader = new FileReader()
-
-  reader.onload = function (event) {
-    const csvText = event.target.result
+    const csvText = await readFileAsText(file)
     const result = parseCSV(csvText)
-
-    console.log('Headers:', result.headers)
-    console.log('Rows:', result.rows)
+    return result
+  } catch (err) {
+    console.error('CSV read failed:', err)
   }
+}
 
-  reader.readAsText(file)
+const readFileAsText = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = () => reject(reader.error)
+
+    reader.readAsText(file)
+  })
 }
 
 const parseCSV = (csvText) => {
